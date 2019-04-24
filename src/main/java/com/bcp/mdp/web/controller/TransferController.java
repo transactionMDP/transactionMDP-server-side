@@ -38,23 +38,22 @@ public class TransferController {
 		return null; // transferService.retrieveTransactionsToExecuteToday();
 		
 	}
-	
-	@GetMapping("/cancelTransaction/{reference}")
+	@PutMapping("/cancel/{reference}")
 	public void cancelTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "5000");
 	}
 	
-	@GetMapping("/refuseTransaction/{reference}")
+	@PutMapping("/refuse/{reference}")
 	public void refuseTransaction(@PathVariable String reference) {
 		transferService.updateTransactionState(reference, "4000");
 	}
 	
-	@GetMapping("/validateTransaction/{reference}")
+	@PutMapping("/validate/{reference}")
 	public void validateTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "3000");
 	}
 	
-	@GetMapping("/validateTransactionInCtn/{reference}")
+	@PutMapping("/sendToCtn/{reference}")
 	public void updateTransactionState(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "2000");
 	}

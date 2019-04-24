@@ -2,8 +2,10 @@ package com.bcp.mdp.dao;
 
 import com.bcp.mdp.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,8 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 	@Query("select distinct transfer from Transaction transfer where transfer <>null ")
 	public List<Transaction> findTransactionDoByTeller();
 	
+	@Transactional
+	@Modifying
 	@Query("update Transaction t set t.state="
 			+ " (select state from State state where state.code=?2)"
 			+ " where concat('R',t.idTransaction)=?1")
