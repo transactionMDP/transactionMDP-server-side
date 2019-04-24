@@ -64,13 +64,13 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		TarificationOfTransaction tarification=tarificationService.retrieveTarification(transferType, amount);
 	
 		if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=amount+tarification.getSumAmount()) {
-			System.out.println("11111111111111111111111111");
+			
 			String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(debitAccountNumber);
 			accountService.debitAccount(debitAccountNumber, amount+tarification.getSumAmount());
 			accountService.creditAccount(accountService.retrieveInstituteAccountNumberPLByReferenceOfInstitut(instituteReferenceForDebitAccount),tarification.getCommissionAmount() );
 			accountService.creditAccount(accountService.retrieveInstituteAccountNumberTVAByReferenceOfInstitut(instituteReferenceForDebitAccount),tarification.getTvaAmount() );
 			if(transferType.equals(transferTypeDao.findByType("InterBpr"))) {
-				System.out.println("4444444444444444444444444444444444444");
+				
 				
 				String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(creditAccountNumber);
 				Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
@@ -90,7 +90,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				
 			}
 			else {
-				System.out.println("333333333333333333333333333333333333");
+				
 			accountService.creditAccount(creditAccountNumber, amount);
 			createTransaction(transfer,debitAccountNumber,creditAccountNumber);
 			}
