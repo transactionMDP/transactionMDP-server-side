@@ -30,6 +30,7 @@ public class TransferController {
 	
 	@GetMapping("/{reference}")
 	public Transaction transactionByReference(@PathVariable String reference) {
+		System.out.println("okkkkkk");
 		return transferService.retrieveByReference(reference);
 		
 	}
@@ -39,22 +40,22 @@ public class TransferController {
 		
 	}
 	
-	@GetMapping("/cancelTransaction/{reference}")
+	@GetMapping("/cancel/{reference}")
 	public void cancelTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "5000");
 	}
 	
-	@GetMapping("/refuseTransaction/{reference}")
+	@GetMapping("/refuse/{reference}")
 	public void refuseTransaction(@PathVariable String reference) {
 		transferService.updateTransactionState(reference, "4000");
 	}
 	
-	@GetMapping("/validateTransaction/{reference}")
+	@GetMapping("/validate/{reference}")
 	public void validateTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "3000");
 	}
 	
-	@GetMapping("/validateTransactionInCtn/{reference}")
+	@GetMapping("/sendToCtn/{reference}")
 	public void updateTransactionState(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "2000");
 	}
