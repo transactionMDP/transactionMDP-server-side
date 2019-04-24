@@ -87,6 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .permitAll()
                     .antMatchers(HttpMethod.GET, "/api/transfer/**", "/api/account/**", "/api/transaction/**")
                         .permitAll()
+                     .antMatchers(HttpMethod.PUT, "/api/transfer/**", "/api/account/**", "/api/transaction/**")
+                        .permitAll()
                     .antMatchers(HttpMethod.POST,  "/api/tansfer/**")
                         .permitAll()
                     .anyRequest()
