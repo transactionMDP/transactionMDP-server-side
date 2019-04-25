@@ -177,6 +177,11 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 	}
 
 	@Override
+	public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size) {
+		return transferDao.findByState(stateCode);
+	}
+
+	@Override
 	public List<Transaction> retrieveTransactionDoInInstitute(String instituteReference) {
 		// TODO Auto-generated method stub
 		return null;

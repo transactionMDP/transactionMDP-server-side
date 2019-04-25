@@ -28,7 +28,9 @@ public interface ITransferInBPService {
 	/*cette fonction permet de retourner toute les transactions effectuée par l'utilisateur courrant*/
 	//public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber);
 	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size);
-	
+
+	public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size);
+
 	/*cette fonction permet de retourner toute les transactions effectuée une agence  donnée*/
 	public List<Transaction> retrieveTransactionDoInInstitute(String instituteReference);
 	public List<Transaction> retrieveTransactionDoAtOperationDate(Date date);

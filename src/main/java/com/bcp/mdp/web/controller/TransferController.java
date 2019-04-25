@@ -37,6 +37,20 @@ public class TransferController {
 												   @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 		return transferService.getUserTransfers(currentUser.getUsername(), page, size);
 	}
+
+	@GetMapping("/ctrllist")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getCTRLTransfers(@CurrentUser UserPrincipal currentUser,
+																			@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+																			@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getTransfersByState("1000", page, size);
+	}
+
+	@GetMapping("/ctnlist")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getCTNTransfers(@CurrentUser UserPrincipal currentUser,
+																		@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+																		@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getTransfersByState("2000", page, size);
+	}
 	
 	@GetMapping("/{reference}")
 	public Transaction transactionByReference(@PathVariable String reference) {
