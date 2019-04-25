@@ -22,7 +22,7 @@ public class Agency extends Institute implements Serializable {
 	
 	@OneToMany(mappedBy="agency")
 	@JsonBackReference
-	Set<Teller> tellers;
+	Set<User> tellers;
 
 	
 

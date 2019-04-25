@@ -2,6 +2,7 @@ package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -50,6 +51,10 @@ public class User implements Serializable /*DateAudit*/ {
     @Transient
     //@NotBlank
     private String registrationNumberOrEmail;
+
+    @OneToOne
+    //@JsonManagedReference
+    private Agency agency;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

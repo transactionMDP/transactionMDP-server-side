@@ -1,8 +1,11 @@
 package com.bcp.mdp.model;
 
+import com.bcp.mdp.model.audit.UserDateAudit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,7 +13,7 @@ import java.util.Date;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Transaction  implements Serializable {
+public class Transaction  extends UserDateAudit {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -29,7 +32,7 @@ public class Transaction  implements Serializable {
 	String reasonOfRefuse; //  optionnel , seullement si la transaction a été  refusé
 	Date operationDate; //la date de la transaction qui est la date du jour;,
 	Date executionDate; //la date  d'execution de la transaction qui est par défaut la date du jour;
-	Boolean executed;// this attribute store if a transaction are excuted or no. And some transactions  of today can be executed or no if you restart the server 
+	Boolean executed;// this attribute store if a transaction are excuted or no. And some transactions  of today can be executed or no if you restart the server
 	Date debitDate; // date de valeur au debit;
 	Date creditDate; // date de valeur au credit;
 	double amount; // montant total  de la transaction qui inclut le montant initié , la commission et la tva;
@@ -60,13 +63,18 @@ public class Transaction  implements Serializable {
 	@JoinColumn(name="typeOfTransfert" , referencedColumnName="type")
     TransferType transactionTransferType; // pour preciser si c'est intra-agence, intra-BPR,
 	
-	@ManyToOne
+	/*@ManyToOne
 	@JsonManagedReference
     Teller tellerInitiator;
 	
 	@ManyToOne
 	@JsonManagedReference
-    Teller tellerVerificator;
+    Teller tellerVerificator;*/
+	/*@CreatedBy
+	private User createdBy;
+
+	@LastModifiedBy
+	private User updatedBy;*/
 
 	public long getIdTransaction() {
 		return idTransaction;
@@ -172,7 +180,7 @@ public class Transaction  implements Serializable {
 		this.transactionTransferType = transactionTransferType;
 	}
 
-	public Teller getTellerInitiator() {
+	/*public Teller getTellerInitiator() {
 		return tellerInitiator;
 	}
 
@@ -186,7 +194,23 @@ public class Transaction  implements Serializable {
 
 	public void setTellerVerificator(Teller tellerVerificator) {
 		this.tellerVerificator = tellerVerificator;
+	}*/
+
+	/*public User getCreatedBy() {
+		return createdBy;
 	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public User getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(User updatedBy) {
+		this.updatedBy = updatedBy;
+	}*/
 
 	public String getTransferReason() {
 		return transferReason;

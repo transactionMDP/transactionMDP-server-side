@@ -38,4 +38,6 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 
 	@Query("select distinct transfer from Transaction transfer where concat('R',transfer.idTransaction)=?1")
 	public Transaction findByReference(String reference);
+
+
 }
