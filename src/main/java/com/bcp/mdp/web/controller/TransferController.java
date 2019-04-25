@@ -30,7 +30,6 @@ public class TransferController {
 	
 	@GetMapping("/{reference}")
 	public Transaction transactionByReference(@PathVariable String reference) {
-		System.out.println("okkkkkk");
 		return transferService.retrieveByReference(reference);
 		
 	}
