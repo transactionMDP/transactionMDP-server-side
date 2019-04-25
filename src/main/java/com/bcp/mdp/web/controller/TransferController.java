@@ -2,7 +2,10 @@ package com.bcp.mdp.web.controller;
 
 import com.bcp.mdp.dto.TransferDto;
 import com.bcp.mdp.model.Transaction;
+import com.bcp.mdp.security.CurrentUser;
+import com.bcp.mdp.security.UserPrincipal;
 import com.bcp.mdp.service.ITransferInBPService;
+import com.bcp.mdp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,13 @@ public class TransferController {
 	public List<Transaction> listTransactions() {
 		return transferService.retrieveTransfers();
 		
+	}
+
+	@GetMapping("/me")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(@CurrentUser UserPrincipal currentUser,
+												   @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+												   @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getUserTransfers(currentUser.getUsername(), page, size);
 	}
 	
 	@GetMapping("/{reference}")

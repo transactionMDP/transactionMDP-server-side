@@ -8,11 +8,18 @@ import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.Currency;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
+import com.bcp.mdp.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component("transferService")
 public class TransferInBPServiceV1 implements ITransferInBPService {
@@ -158,10 +165,15 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		return transferDao.findAll();
 	}
 
-	@Override
+	/*@Override
 	public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber) {
 		// TODO Auto-generated method stub
 		return null;
+	}*/
+	@Override
+	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size) {
+		//validatePageNumberAndSize(page, size);
+		return transferDao.findByCreatedBy(currentUser);
 	}
 
 	@Override
