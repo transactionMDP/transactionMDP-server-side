@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -37,9 +38,10 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 			+ " where concat('R',t.idTransaction)=?1")
 	public void updateTransactionState(String transactionRef, String codeState);
 	
-	@Query("select distinct transfer from Transaction transfer where transfer.executionDate=?1 and "
-			+ " transfer.executed=false")
-	public List<Transaction> findByExecutionDateAndExecuted(Date executionDate, Boolean executed);
+	@Query("select distinct transfer from Transaction transfer "
+			+ "where transfer.executionDate= ?1"
+			+ " ")
+	public List<Transaction> transactionToExecuteToday(LocalDate date);
 
 	@Query("select distinct transfer from Transaction transfer where concat('R',transfer.idTransaction)=?1")
 	public Transaction findByReference(String reference);

@@ -90,7 +90,7 @@ public class TarificationServiceV1 implements ITarificationService {
 		tarif.setTvaAmount(tvaValue);
 		tarif.setSumAmount(sumTarification);
 		return tarif;
-	}
+	}*/
 	
 	@Override
 	public TarificationOfTransaction retrieveTarification(long accountDebit, long accountCredit, double amount) {
@@ -110,6 +110,6 @@ public class TarificationServiceV1 implements ITarificationService {
 		tarif.setTvaAmount(tvaValue);
 		tarif.setSumAmount(sumTarification);
 		return tarif;
-	}*/
+	}
 
 }

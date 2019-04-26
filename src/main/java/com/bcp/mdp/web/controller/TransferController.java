@@ -9,6 +9,7 @@ import com.bcp.mdp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin
@@ -28,6 +29,12 @@ public class TransferController {
 	@GetMapping("/list")
 	public List<Transaction> listTransactions() {
 		return transferService.retrieveTransfers();
+		
+	}
+	
+	@GetMapping("/listToExecute")
+	public List<Transaction> list() {
+		return transferService.retrieveTransactionsToExecuteToday(LocalDate.now());
 		
 	}
 
@@ -82,5 +89,5 @@ public class TransferController {
 	public void updateTransactionState(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "2000");
 	}
-	//HJKLM%
+	
 }

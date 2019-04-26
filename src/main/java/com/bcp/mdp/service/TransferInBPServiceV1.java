@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -186,9 +187,9 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		transferDao.updateTransactionState(transactionRef, codeState);
 		
 	}
-	
-	public List<Transaction> retrieveTransactionsToExecuteToday(){
-		return transferDao.findByExecutionDateAndExecuted(new Date(), false);
+	@Override
+	public List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date){
+		return transferDao.transactionToExecuteToday(date);
 		
 	}
 	@Override
