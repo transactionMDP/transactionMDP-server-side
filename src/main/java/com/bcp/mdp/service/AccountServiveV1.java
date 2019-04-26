@@ -97,16 +97,26 @@ public class AccountServiveV1 implements IAccountService {
 	@Override
 	public void creditAccount(long accountNumber, double amount) {
 		// TODO Auto-generated method stub
-		 accountdao.updateBalanceForAccountNumber(accountNumber, amount+accountdao.findBalanceForAccountNumber(accountNumber));
+		 accountdao.updateBalanceForAccountNumber(accountNumber, amount);
 	}
 
 	@Override
 	public void debitAccount(long accountNumber, double amount) {
 		// TODO Auto-generated method stub
-		accountdao.updateBalanceForAccountNumber(accountNumber, accountdao.findBalanceForAccountNumber(accountNumber)-amount);
+		accountdao.updateBalanceForAccountNumber(accountNumber, -amount);
 
 	}
+	
+	@Override
+	public void addObligation(long debitaccountNumber, double amount) {
+		accountdao.updateObligationForAccountNumber(debitaccountNumber, amount+accountdao.findObligationForAccountNumber(debitaccountNumber));
+	}
 
+	@Override
+	public void removeObligation(long debitaccountNumber, double amount) {
+		accountdao.updateObligationForAccountNumber(debitaccountNumber,accountdao.findObligationForAccountNumber(debitaccountNumber)-amount);
+		
+	}
 	@Override
 	public double retrieveBalanceByAccountNumber(long accountNumber) {
 		// TODO Auto-generated method stub
@@ -114,6 +124,13 @@ public class AccountServiveV1 implements IAccountService {
 
 	}
 
+	@Override
+	public double retrieveFreeBalanceByAccountNumber(long accountNumber) {
+		// TODO Auto-generated method stub
+		return accountdao.findBalanceForAccountNumber(accountNumber);
+
+	}
+	
 	@Override
 	public boolean verifyExistAccount(long accountNumber) {
 		// TODO Auto-generated method stub

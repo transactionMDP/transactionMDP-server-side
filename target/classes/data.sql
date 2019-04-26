@@ -57,6 +57,7 @@ insert into State(code,libelle) values('2000','en attente de validation au ctn')
 insert into State(code,libelle) values('3000','validée');
 insert into State(code,libelle) values('4000','refusée');
 insert into State(code,libelle) values('5000','annulée');
+insert into State(code,libelle) values('6000','exécutée');
 
 insert into Account(account_number,Balance,state,CURRENCY,resident,institute_Account,account_category)
 values(2627,5000,'200','MAD','230','230','compte de charges et profit');

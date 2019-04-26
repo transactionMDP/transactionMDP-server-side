@@ -4,6 +4,7 @@ import com.bcp.mdp.dao.AgencyDao;
 import com.bcp.mdp.dao.TransactionDao;
 import com.bcp.mdp.dao.TransferTypeDao;
 import com.bcp.mdp.dto.TarificationOfTransaction;
+import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.TransferType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,11 @@ public class TarificationServiceV1 implements ITarificationService {
 	
 	@Autowired
 	private TransferTypeServiceV1 transferTypeService;
+	
+	@Override
+	public Commission tarificationAndValorisation(long accountDebit, long accountCredit) {
+		return retrieveTarification(verifyTransferType(accountDebit,accountCredit));
+	}
 
 
 	@Override
@@ -52,7 +58,19 @@ public class TarificationServiceV1 implements ITarificationService {
 				return transferTypeDao.findByType("InterBpr");
 		}
 	}
-
+	
+	@Override
+	public Commission retrieveTarification(TransferType transferType) {
+		// TODO Auto-generated method stub
+		double commissionRate=transferTypeService.retrieveCommissionValueForTransferType(transferType);
+		double tvaRate=transferTypeService.retrieveTvaValueForTransferType(transferType);
+		Commission commission =new Commission();
+		commission.setCommissionRate(commissionRate);
+		commission.setTvaRate(tvaRate);
+		return commission;
+	}
+	
+/*
 	@Override
 	public TarificationOfTransaction retrieveTarification(TransferType transferType, double amount) {
 		// TODO Auto-generated method stub
@@ -92,6 +110,6 @@ public class TarificationServiceV1 implements ITarificationService {
 		tarif.setTvaAmount(tvaValue);
 		tarif.setSumAmount(sumTarification);
 		return tarif;
-	}
+	}*/
 
 }

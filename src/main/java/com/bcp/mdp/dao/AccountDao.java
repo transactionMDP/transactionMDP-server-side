@@ -65,9 +65,17 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 	public Account findByAccountNumber(long accountNumber);
 	@Transactional
 	@Modifying
-	@Query("update Account a set a.balance= :amount where a.accountNumber= :number")
+	@Query("update Account a set a.balance=a.balance +:amount where a.accountNumber= :number")
 	void updateBalanceForAccountNumber(@Param("number") long number, @Param("amount") double amount);
+	
+	@Transactional
+	@Modifying
+	@Query("update Account a set a.obligation = a.obligation +:amount where a.accountNumber= :number")
+	void updateObligationForAccountNumber(@Param("number") long number, @Param("amount") double amount);
 
+	@Query("Select a.obligation From Account a Where a.accountNumber= :number")
+	double findObligationForAccountNumber(@Param("number") long number);
+	
 	@Query("Select a.balance From Account a Where a.accountNumber= :number")
 	double findBalanceForAccountNumber(@Param("number") long number);
 	

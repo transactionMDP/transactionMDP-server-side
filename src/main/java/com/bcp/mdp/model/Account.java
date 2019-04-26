@@ -2,10 +2,22 @@ package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.Set;
@@ -13,6 +25,9 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
+@org.hibernate.annotations.Entity(
+		dynamicInsert = true
+)
 public class Account implements Serializable{
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -28,8 +43,13 @@ public class Account implements Serializable{
 	
 	@Column(nullable=false)
 	double balance;
-	//double obligation; //sum of amount that will be debited at an execution date of a transaction
-	//double freeBalance; // that is a real free balance on a account , its is balance-obligation
+	@Column(columnDefinition="double default 0")
+	double obligation; //sum of amount that will be debited at an execution date of a transaction
+
+	//@Column(columnDefinition="double default 0")
+	@Generated(GenerationTime.ALWAYS)
+	@Column(columnDefinition="double default 0")
+	double freeBalance; // that is a real free balance on a account , its is balance-obligation
 	
 	@ManyToOne
 	@JsonManagedReference
@@ -85,13 +105,5 @@ public class Account implements Serializable{
 	@JsonBackReference
 	Set<Transaction> transactionsDebit;
 
-	public long getAccountNumber() {
-		return accountNumber;
-	}
-
-
-	public void setAccountNumber(long accountNumber) {
-		this.accountNumber = accountNumber;
-	}
-
+	
 }

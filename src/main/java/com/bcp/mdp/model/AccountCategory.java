@@ -1,7 +1,12 @@
 package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;

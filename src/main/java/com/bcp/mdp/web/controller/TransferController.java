@@ -18,8 +18,8 @@ public class TransferController {
 	private ITransferInBPService transferService;
 	
 	@PostMapping("/dotransfer")
-	public void doTransfer(@RequestBody TransferDto transfer) {
-		transferService.doTransfer(transfer);
+	public String doTransfer(@RequestBody TransferDto transfer) {
+		return transferService.doTransfer(transfer);
 	}
 	
 	@GetMapping("/list")
