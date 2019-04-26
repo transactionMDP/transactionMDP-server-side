@@ -25,5 +25,6 @@ public class Commission {
 	double commissionRate;
 	double tvaRate;
 	double exchangeRate;
-	
+
+
 }

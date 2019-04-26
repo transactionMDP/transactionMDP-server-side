@@ -74,13 +74,5 @@ public class Transaction  extends UserDateAudit {
 
 	@OneToOne
 	Commission commission;
-	
-	@ManyToOne
-
-	@CreatedBy
-	User createdBy;
-
-	@LastModifiedBy
-	User updatedBy;
 
 }
