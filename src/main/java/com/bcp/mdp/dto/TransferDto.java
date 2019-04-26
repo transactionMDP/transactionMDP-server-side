@@ -21,4 +21,5 @@ public class TransferDto {
 	private double commissionTVA;
 	private double transactionAmount;
 
+
 }
