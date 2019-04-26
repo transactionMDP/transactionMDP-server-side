@@ -16,15 +16,15 @@ import java.util.Optional;
 public class AuditingConfig {
 
     @Bean
-    public AuditorAware<Long> auditorProvider() {
+    public AuditorAware<String>/*AuditorAware<Long>*/ auditorProvider() {
         return new SpringSecurityAuditAwareImpl();
     }
 }
 
-class SpringSecurityAuditAwareImpl implements AuditorAware<Long> {
+class SpringSecurityAuditAwareImpl implements AuditorAware<String>/*AuditorAware<Long>*/ {
 
     @Override
-    public Optional<Long> getCurrentAuditor() {
+    public Optional<String>/*Optional<Long>*/ getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null ||
@@ -35,6 +35,7 @@ class SpringSecurityAuditAwareImpl implements AuditorAware<Long> {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-        return Optional.ofNullable(userPrincipal.getId());
+        //return Optional.ofNullable(userPrincipal.getId());
+        return Optional.ofNullable(userPrincipal.getUsername());
     }
 }

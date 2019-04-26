@@ -2,7 +2,10 @@ package com.bcp.mdp.web.controller;
 
 import com.bcp.mdp.dto.TransferDto;
 import com.bcp.mdp.model.Transaction;
+import com.bcp.mdp.security.CurrentUser;
+import com.bcp.mdp.security.UserPrincipal;
 import com.bcp.mdp.service.ITransferInBPService;
+import com.bcp.mdp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +30,27 @@ public class TransferController {
 		return transferService.retrieveTransfers();
 		
 	}
+
+	@GetMapping("/me")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(@CurrentUser UserPrincipal currentUser,
+												   @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+												   @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getUserTransfers(currentUser.getUsername(), page, size);
+	}
+
+	@GetMapping("/ctrllist")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getCTRLTransfers(@CurrentUser UserPrincipal currentUser,
+																			@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+																			@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getTransfersByState("1000", page, size);
+	}
+
+	@GetMapping("/ctnlist")
+	public List<Transaction>/*PagedResponse<Transaction>*/ getCTNTransfers(@CurrentUser UserPrincipal currentUser,
+																		@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+																		@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+		return transferService.getTransfersByState("2000", page, size);
+	}
 	
 	@GetMapping("/{reference}")
 	public Transaction transactionByReference(@PathVariable String reference) {
@@ -38,21 +62,22 @@ public class TransferController {
 		return null; // transferService.retrieveTransactionsToExecuteToday();
 		
 	}
+
 	@PutMapping("/cancel/{reference}")
 	public void cancelTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "5000");
 	}
-	
+
 	@PutMapping("/refuse/{reference}")
 	public void refuseTransaction(@PathVariable String reference) {
 		transferService.updateTransactionState(reference, "4000");
 	}
-	
+
 	@PutMapping("/validate/{reference}")
 	public void validateTransaction(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "3000");
 	}
-	
+
 	@PutMapping("/sendToCtn/{reference}")
 	public void updateTransactionState(@PathVariable String reference ) {
 		transferService.updateTransactionState(reference, "2000");

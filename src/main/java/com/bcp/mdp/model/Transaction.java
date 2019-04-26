@@ -1,5 +1,6 @@
 package com.bcp.mdp.model;
 
+import com.bcp.mdp.model.audit.UserDateAudit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AccessLevel;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.persistence.*;
 
@@ -18,7 +21,7 @@ import java.util.Date;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Transaction  implements Serializable {
+public class Transaction  extends UserDateAudit {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -38,7 +41,7 @@ public class Transaction  implements Serializable {
 	@CreatedDate
 	Date operationDate; //la date de la transaction qui est la date du jour;,
 	Date executionDate; //la date  d'execution de la transaction qui est par défaut la date du jour;
-	Boolean executed;// this attribute store if a transaction are excuted or no. And some transactions  of today can be executed or no if you restart the server 
+	Boolean executed;// this attribute store if a transaction are excuted or no. And some transactions  of today can be executed or no if you restart the server
 	Date debitDate; // date de valeur au debit;
 	Date creditDate; // date de valeur au credit;
 	double amount; // montant total  de la transaction qui inclut le montant initié , la commission et la tva;
@@ -68,16 +71,16 @@ public class Transaction  implements Serializable {
 	@JsonManagedReference
 	@JoinColumn(name="typeOfTransfert" , referencedColumnName="type")
     TransferType transactionTransferType; // pour preciser si c'est intra-agence, intra-BPR,
-	
+
 	@OneToOne
 	Commission commission;
 	
 	@ManyToOne
-	@JsonManagedReference
-    Teller tellerInitiator;
-	
-	@ManyToOne
-	@JsonManagedReference
-    Teller tellerVerificator;
+
+	@CreatedBy
+	User createdBy;
+
+	@LastModifiedBy
+	User updatedBy;
 
 }

@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
-
+/*
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Teller implements Serializable {
@@ -38,3 +38,4 @@ public class Teller implements Serializable {
 	Set<Transaction> transactionsVerifier;
 
 }
+*/

@@ -1,4 +1,4 @@
-package com.bcp.mdp.service;
+﻿package com.bcp.mdp.service;
 
 import com.bcp.mdp.dao.TransactionDao;
 import com.bcp.mdp.dao.TransferTypeDao;
@@ -9,11 +9,18 @@ import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Currency;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
+import com.bcp.mdp.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component("transferService")
 public class TransferInBPServiceV1 implements ITransferInBPService {
@@ -97,14 +104,13 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		TarificationOfTransaction tarification=tarificationService.retrieveTarification(transferType, amount);
 	
 		if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=amount+tarification.getSumAmount()) {
-			
+
 			String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(debitAccountNumber);
 			accountService.debitAccount(debitAccountNumber, amount+tarification.getSumAmount());
 			accountService.creditAccount(accountService.retrieveInstituteAccountNumberPLByReferenceOfInstitut(instituteReferenceForDebitAccount),tarification.getCommissionAmount() );
 			accountService.creditAccount(accountService.retrieveInstituteAccountNumberTVAByReferenceOfInstitut(instituteReferenceForDebitAccount),tarification.getTvaAmount() );
 			if(transferType.equals(transferTypeDao.findByType("InterBpr"))) {
-				
-				
+
 				String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(creditAccountNumber);
 				Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
 				Long bprLinkaccountCredit=accountService.retrieveBprLinkAccount(instituteReferenceForCreditAccount);
@@ -123,9 +129,14 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				
 			}
 			else {
+
 				
 			accountService.creditAccount(creditAccountNumber, amount);
 			createTransaction(transfer,debitAccountNumber,creditAccountNumber);
+
+				accountService.creditAccount(creditAccountNumber, amount);
+				createTransaction(transfer,debitAccountNumber,creditAccountNumber);
+
 			}
 			
 		}
@@ -226,10 +237,20 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		return transferDao.findAll();
 	}
 
-	@Override
+	/*@Override
 	public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber) {
 		// TODO Auto-generated method stub
 		return null;
+	}*/
+	@Override
+	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size) {
+		//validatePageNumberAndSize(page, size);
+		return transferDao.findByCreatedBy(currentUser);
+	}
+
+	@Override
+	public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size) {
+		return transferDao.findByState(stateCode);
 	}
 
 	@Override

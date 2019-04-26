@@ -1,9 +1,12 @@
 package com.bcp.mdp.dao;
 
 import com.bcp.mdp.model.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +24,11 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
     
 	//public List<Transaction> retrieveTransactionDoByTeller();
 	
-	@Query("select distinct transfer from Transaction transfer where transfer <>null ")
-	public List<Transaction> findTransactions();
+	/*@Query("select distinct transfer from Transaction transfer where transfer <>null ")
+	public List<Transaction> findTransactions();*/
 	
-	@Query("select distinct transfer from Transaction transfer where transfer <>null ")
-	public List<Transaction> findTransactionDoByTeller();
+	/*@Query("select distinct transfer from Transaction transfer where transfer <>null ")
+	public List<Transaction> findTransactionDoByTeller();*/
 	
 	@Transactional
 	@Modifying
@@ -40,4 +43,9 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 
 	@Query("select distinct transfer from Transaction transfer where concat('R',transfer.idTransaction)=?1")
 	public Transaction findByReference(String reference);
+
+	List<Transaction>/*Page<Transaction>*/ findByCreatedBy(String userRegistrationNumber/*, Pageable pageable*/);
+
+	@Query("SELECT t FROM Transaction t where t.state.code = :stateCode")
+	List<Transaction> findByState(@Param("stateCode") String stateCode);
 }

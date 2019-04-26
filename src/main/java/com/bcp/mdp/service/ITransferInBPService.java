@@ -4,6 +4,8 @@ import com.bcp.mdp.dto.TransferDto;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
+import com.bcp.mdp.security.UserPrincipal;
+
 
 import java.util.Date;
 import java.util.List;
@@ -26,9 +28,12 @@ public interface ITransferInBPService {
 	public Transaction retrieveTransfer(long transactionId);
 	public List<Transaction> retrieveTransfers();
 	
-	/*cette fonction permet de retourner toute les transactions effectuée par un agent donnée*/
-	public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber);
-	
+	/*cette fonction permet de retourner toute les transactions effectuée par l'utilisateur courrant*/
+	//public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber);
+	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size);
+
+	public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size);
+
 	/*cette fonction permet de retourner toute les transactions effectuée une agence  donnée*/
 	public List<Transaction> retrieveTransactionDoInInstitute(String instituteReference);
 	public List<Transaction> retrieveTransactionDoAtOperationDate(Date date);
@@ -36,8 +41,14 @@ public interface ITransferInBPService {
 	/* pourquoi ne pas l'implementer ? p etre pour des raisons comptables
 	public void updateTransfer();
 	*/
+
 	String doTransfer(TransferDto transfer);
 	//void createTransaction(TransferDto transfer, long debit, long credit);
+
+	//void doTransfer(TransferDto transfer);
+
+	//void createTransaction(TransferDto transfer, long debit, long credit);
+
 
 	void updateTransactionState(String transactionRef, String codeState);
 
