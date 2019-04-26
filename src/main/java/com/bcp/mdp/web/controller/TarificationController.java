@@ -1,7 +1,8 @@
 package com.bcp.mdp.web.controller;
 
+import com.bcp.mdp.dto.CommissionDto;
 import com.bcp.mdp.dto.TarificationOfTransaction;
-import com.bcp.mdp.model.Commission;
+
 import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.service.ITarificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,13 @@ public class TarificationController {
     ITarificationService tarificationService;
 
 	@PostMapping("/tarifier")
-	public TarificationOfTransaction tarif(@RequestBody Commission commission) {
+	public TarificationOfTransaction tarif(@RequestBody CommissionDto commission) {
 		/*reception d'un tableau dont:
 		 * le premier element est le compte à debiter 
 		 * le deuxième element est le compte à crediter
 		 * le troisième  element est le montant de la transaction
 		 */
-		return null;//tarificationService.retrieveTarification(commission.getAccountN1(), commission.getAccountN2(),commission.getAmount());
+		return tarificationService.retrieveTarification(commission.getAccountN1(), commission.getAccountN2(),commission.getAmount());
 	}
 
 	@PostMapping("/transfertType")
