@@ -61,12 +61,17 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 
         Currency currency= currencyService.retrieveCurrencyByName(transfer.getTransactionCurrency());
         transactionForPersistance.setTransactionCurrency(currency);
-        transactionForPersistance.setTypeTransferSource("intra en agence");
+        transactionForPersistance.setTypeTransferSource(transfer.getTransactionType());
         transactionForPersistance.setState(stateService.retrieveStateByLibelle("1000"));
 
         if(transfer.isApplyCommission()){
             commissionService.persist(commission);
             transactionForPersistance.setCommission(commission);
+        }
+
+        if(transfer.isExchange()){
+            /*exchangeService.persist(exchange);
+            transactionForPersistance.setExchange(exchange);*/
         }
 
         transferDao.save(transactionForPersistance);
@@ -93,6 +98,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 
         if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
             createTransaction(transfer,commission,transferType);
+
             accountService.addObligation(debitAccountNumber, sumAmount);
 
             return "OK";

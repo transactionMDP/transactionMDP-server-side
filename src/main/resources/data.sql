@@ -114,7 +114,7 @@ insert into Account(account_number,Balance,state,CURRENCY,resident,customer,acco
 values(2732,1000,'200','MAD','230',1,'compte titre');
 
 insert into Account(account_number,Balance,state,CURRENCY,resident,customer,account_category)
-values(2733,1000,'200','MAD','240',1,'compte courant');
+values(2733,1000,'200','USD','240',1,'compte courant');
 insert into Account(account_number,Balance,state,CURRENCY,resident,customer,account_category)
 values(2734,1000,'400','MAD','240',1,'compte courant');
 insert into Account(account_number,Balance,state,CURRENCY,resident,customer,account_category)
