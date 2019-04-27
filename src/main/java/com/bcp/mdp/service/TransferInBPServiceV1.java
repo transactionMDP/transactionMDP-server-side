@@ -48,8 +48,9 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 
     @Override
     public void createTransaction(TransferDto transfer,Commission commission,TransferType transferType) {
-        // TODO Auto-generated method stub
+
         Transaction transactionForPersistance =new Transaction() ;
+
         Account debitAccount=accountService.retrieveAccountByAccountNumber(transfer.getPrincipalAccount());
         Account creditAccount=accountService.retrieveAccountByAccountNumber(transfer.getBeneficiaryAccount());
         transactionForPersistance.setDebitAccount(debitAccount);
@@ -57,12 +58,17 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
         transactionForPersistance.setAmount(transfer.getTransactionAmount());
         transactionForPersistance.setExecutionDate(transfer.getExecutionDate());
         transactionForPersistance.setTransferReason(transfer.getTransferReason());
+
         Currency currency= currencyService.retrieveCurrencyByName(transfer.getTransactionCurrency());
         transactionForPersistance.setTransactionCurrency(currency);
         transactionForPersistance.setTypeTransferSource("intra en agence");
         transactionForPersistance.setState(stateService.retrieveStateByLibelle("1000"));
-        commissionService.persist(commission);
-        transactionForPersistance.setCommission(commission);
+
+        if(transfer.isApplyCommission()){
+            commissionService.persist(commission);
+            transactionForPersistance.setCommission(commission);
+        }
+
         transferDao.save(transactionForPersistance);
     }
 
@@ -73,11 +79,10 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 
     @Override
     public String doTransfer( TransferDto transfer) {
-        // TODO Auto-generated method stub
         long debitAccountNumber=transfer.getPrincipalAccount();
         long creditAccountNumber=transfer.getBeneficiaryAccount();
 
-
+        // La commission
         TransferType transferType=tarificationService.verifyTransferType(debitAccountNumber, creditAccountNumber);
         Commission commission =tarificationService.retrieveTarification(transferType);
 
@@ -85,9 +90,11 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
         double comm=amount*commission.getCommissionRate();
         double tva=comm*commission.getTvaRate();
         double sumAmount=amount+comm+tva;
+
         if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
             createTransaction(transfer,commission,transferType);
             accountService.addObligation(debitAccountNumber, sumAmount);
+
             return "OK";
         }
 

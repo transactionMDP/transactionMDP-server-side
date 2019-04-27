@@ -21,6 +21,5 @@ public class TransferDto {
 	 double commissionAmount;
 	 double commissionTVA;
 	 double transactionAmount;
-
-
+	 boolean applyCommission;
 }
