@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -142,6 +143,73 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		}
 
 	}*/
+	@Override
+	public void executeTransaction(Transaction transaction) {
+		double amount=transaction.getAmount();
+		double commission=amount*transaction.getCommission().getCommissionRate();
+		double tva=commission*transaction.getCommission().getTvaRate();
+		double sumAmount=amount+commission+tva;
+		accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),sumAmount);
+		accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(), sumAmount);
+		
+		String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(transaction.getDebitAccount().getAccountNumber());
+		accountService.creditAccount(accountService.retrieveInstituteAccountNumberPLByReferenceOfInstitut(instituteReferenceForDebitAccount),commission);
+		accountService.creditAccount(accountService.retrieveInstituteAccountNumberTVAByReferenceOfInstitut(instituteReferenceForDebitAccount),tva);
+		if(transaction.getReference().startsWith("3", 3)) {
+			
+			String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(transaction.getCreditAccount().getAccountNumber());
+			Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
+			Long bprLinkaccountCredit=accountService.retrieveBprLinkAccount(instituteReferenceForCreditAccount);
+			
+			
+			accountService.creditAccount(bprLinkaccountDebtit, amount);
+			createIntermediaireTransaction(transaction.getDebitAccount().getAccountNumber(),bprLinkaccountDebtit,amount);
+			
+			accountService.debitAccount(bprLinkaccountDebtit, amount);
+			accountService.creditAccount(bprLinkaccountCredit, amount);
+			createIntermediaireTransaction(bprLinkaccountDebtit,bprLinkaccountCredit,amount);
+			
+			accountService.debitAccount(bprLinkaccountCredit, amount);
+			accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
+			createIntermediaireTransaction(bprLinkaccountCredit,transaction.getCreditAccount().getAccountNumber(),amount);
+			
+		}
+		
+		accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
+
+		updateTransactionState(transaction.getReference(), "6000");
+		
+	}
+	
+	@Override
+	public void updateTransactionState(String transactionRef, String codeState) {
+		transferDao.updateTransactionState(transactionRef, codeState);
+	}
+	@Override
+	public List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date){
+		return transferDao.transactionToExecuteToday(date);
+		
+	}
+	@Override
+	public void  doTransactionOfExecutionDayToday(List<Transaction> transactions) {
+		// this function execute(debit and credit) transaction whom ecécuteDay equals today
+
+		for(Transaction transaction: transactions)
+		{
+			 executeTransaction(transaction);
+		}
+		
+	}
+	
+	@Override
+	public Transaction retrieveByReference(String reference) {
+		return transferDao.findByReference(reference);
+	}
+
+	@Override
+	public void tariffyTransfer() {
+		// TODO Auto-generated method stub
+	}
 
     @Override
     public void executeTransaction(Transaction transaction) {
@@ -176,7 +244,8 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
         }
 
         accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
-        updateTransactionState(transaction.getReference(), "6000");
+
+        transferDao.updateTransactionState(transaction.getReference(), "6000");
 
     }
 

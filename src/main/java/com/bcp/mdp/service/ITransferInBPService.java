@@ -6,7 +6,7 @@ import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.security.UserPrincipal;
 
-
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -62,4 +62,5 @@ public interface ITransferInBPService {
 	Transaction retrieveByReference(String reference);
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
 	void createTransaction(TransferDto transfer, Commission commission, TransferType transferType);
+	List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date);
 }

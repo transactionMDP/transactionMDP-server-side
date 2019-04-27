@@ -17,6 +17,7 @@ import javax.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -38,10 +39,8 @@ public class Transaction  extends UserDateAudit {
 	String typeTransferSource; // pour preciser si ça provient de l'agence , du e-banking ...;
 	String transferReason; //pour preciser le motif de la transaction;
 	String reasonOfRefuse; //  optionnel , seullement si la transaction a été  refusé
-	@CreatedDate
 	Date operationDate; //la date de la transaction qui est la date du jour;,
-	Date executionDate; //la date  d'execution de la transaction qui est par défaut la date du jour;
-	Boolean executed;// this attribute store if a transaction are excuted or no. And some transactions  of today can be executed or no if you restart the server
+	LocalDate executionDate; //la date  d'execution de la transaction qui est par défaut la date du jour;
 	Date debitDate; // date de valeur au debit;
 	Date creditDate; // date de valeur au credit;
 	double amount; // montant total  de la transaction qui inclut le montant initié , la commission et la tva;
