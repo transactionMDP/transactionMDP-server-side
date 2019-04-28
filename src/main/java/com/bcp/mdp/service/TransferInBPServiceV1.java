@@ -59,7 +59,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
         transactionForPersistance.setExecutionDate(transfer.getExecutionDate());
         transactionForPersistance.setTransferReason(transfer.getTransferReason());
 
-        Currency currency= currencyService.retrieveCurrencyByName(transfer.getTransactionCurrency());
+        Currency currency= currencyService.retrieveCurrencyByCode(transfer.getTransactionCurrency());
         transactionForPersistance.setTransactionCurrency(currency);
         transactionForPersistance.setTypeTransferSource(transfer.getTransactionType());
         transactionForPersistance.setState(stateService.retrieveStateByLibelle("1000"));

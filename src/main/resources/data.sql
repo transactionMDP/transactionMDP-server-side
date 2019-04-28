@@ -11,11 +11,15 @@ insert into Transfer_Type  values(1,'IntraAgence',1,1);
 insert into Transfer_Type  values(2,'IntraBpr',2,2);
 insert into Transfer_Type  values(3,'InterBpr',3,3);
 
+insert into Currency values(1,'MAD','Moroccan Dirham');
+insert into Currency values(2,'MAC', 'Moroccan Dirham C');
+insert into Currency values(3,'EUR','Euro');
+insert into Currency values(4,'USD', 'US Dollar');
 
-insert into Currency values(1,'MAD');
-insert into Currency values(2,'MAC');
-insert into Currency values(3,'EURO');
-insert into Currency values(4,'DOLLAR');
+insert into Exchange_Rate values(1,'MAD','USD',0.103,0.104,0.105,null,null);
+insert into Exchange_Rate values(2,'MAD','EUR',0.092,0.093,0.094,null,null;
+insert into Exchange_Rate values(3,'USD','MAD',9.666,9.667,9.668,null,null);
+insert into Exchange_Rate values(4,'EUR','MAD',10.787,10.788,10.789,null,null;
 
 insert into Account_Category values(1,'compte de gestion');
 insert into Account_Category values(2,'compte financier');

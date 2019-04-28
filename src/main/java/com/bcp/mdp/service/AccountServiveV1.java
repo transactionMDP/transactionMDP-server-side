@@ -234,4 +234,8 @@ public class AccountServiveV1 implements IAccountService {
 		return accountdao.findBprLinkAccount(refAgence);
 	}
 
+	@Override
+	public String getCustomerCategoryByAccountId(Long idAccount) {
+		return accountdao.findCustomerCategoryByAccountId(idAccount);
+	}
 }

@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -22,18 +19,20 @@ public class ExchangeRate implements Serializable {
 	@Id
 	@GeneratedValue()
 	long idExchangeRate;
-	String name;
+	//String name;
 	double instantCourse;
 	double batchNegociatedCourse;
 	double individualNegociatedCourse;
-	
+
 	@OneToOne
 	@JsonManagedReference
+	@JoinColumn(name="fromCurrency" , referencedColumnName="code")
+	Currency sellCurrency;
+
+	@OneToOne
+	@JsonManagedReference
+	@JoinColumn(name="toCurrency" , referencedColumnName="code")
     Currency buyCurrency;
-	
-	@OneToOne
-	@JsonManagedReference
-    Currency sellCurrency;
 	
 	@OneToOne 
 	@JsonManagedReference

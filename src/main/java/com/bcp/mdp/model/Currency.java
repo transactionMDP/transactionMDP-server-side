@@ -24,6 +24,7 @@ public class Currency implements Serializable {
 	@Id
 	@GeneratedValue()
 	 long IdCurrency;
+	 String code;
 	 String name;
 	
 	@OneToMany(mappedBy="buyCurrency")

@@ -12,9 +12,8 @@ public class CurrencyServiceV1 implements ICurrencyService {
 	private CurrencyDao currencyDao;
 
 	@Override
-	public Currency retrieveCurrencyByName(String name) {
-		// TODO Auto-generated method stub
-		return currencyDao.retrieveByName(name);
+	public Currency retrieveCurrencyByCode(String code) {
+		return currencyDao.findByCode(code);
 	}
 
 }
