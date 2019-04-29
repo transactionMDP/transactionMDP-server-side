@@ -109,12 +109,12 @@ public class AccountServiveV1 implements IAccountService {
 	
 	@Override
 	public void addObligation(long debitaccountNumber, double amount) {
-		accountdao.updateObligationForAccountNumber(debitaccountNumber, amount+accountdao.findObligationForAccountNumber(debitaccountNumber));
+		accountdao.updateObligationForAccountNumber(debitaccountNumber, amount);
 	}
 
 	@Override
 	public void removeObligation(long debitaccountNumber, double amount) {
-		accountdao.updateObligationForAccountNumber(debitaccountNumber,accountdao.findObligationForAccountNumber(debitaccountNumber)-amount);
+		accountdao.updateObligationForAccountNumber(debitaccountNumber,-amount);
 		
 	}
 	@Override
@@ -127,7 +127,7 @@ public class AccountServiveV1 implements IAccountService {
 	@Override
 	public double retrieveFreeBalanceByAccountNumber(long accountNumber) {
 		// TODO Auto-generated method stub
-		return accountdao.findBalanceForAccountNumber(accountNumber);
+		return accountdao.findFreeBalanceForAccountNumber(accountNumber);
 
 	}
 	
@@ -233,5 +233,16 @@ public class AccountServiveV1 implements IAccountService {
 	public Long retrieveBprLinkAccount( String refAgence) {
 		return accountdao.findBprLinkAccount(refAgence);
 	}
+	
+	@Override
+	public String retrieveAccountCustomerEmail(long accountNumber) {
+		return accountdao.findAccountCustomerEmail(accountNumber);
+	}
+	
+	@Override
+	public String retrieveAccountCustomerName(long accountNumber) {
+		return accountdao.findAccountCustomerName(accountNumber);
+	}
+
 
 }

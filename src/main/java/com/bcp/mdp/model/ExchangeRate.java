@@ -35,9 +35,6 @@ public class ExchangeRate implements Serializable {
 	@JsonManagedReference
     Currency sellCurrency;
 	
-	@OneToOne 
-	@JsonManagedReference
-    CustomerCategory customerCategory;
 	
 	@OneToOne
 	@JsonManagedReference

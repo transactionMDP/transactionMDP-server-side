@@ -16,20 +16,6 @@ import java.util.List;
 
 @Component("transferDao")
 public interface TransactionDao extends JpaRepository<Transaction, Long> {
-
-	/*@Transactional
-	@Modifying
-	@Query("insert into Transaction "
-			+ " values(transferDto.debitAccount,transferDto.creditAccount ,transferDto.amount")
-	public void createTransaction(TransferDto transferDto);*/
-    
-	//public List<Transaction> retrieveTransactionDoByTeller();
-	
-	/*@Query("select distinct transfer from Transaction transfer where transfer <>null ")
-	public List<Transaction> findTransactions();*/
-	
-	/*@Query("select distinct transfer from Transaction transfer where transfer <>null ")
-	public List<Transaction> findTransactionDoByTeller();*/
 	
 	@Transactional
 	@Modifying
@@ -39,14 +25,15 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 	public void updateTransactionState(String transactionRef, String codeState);
 	
 	@Query("select distinct transfer from Transaction transfer "
-			+ "where transfer.executionDate= ?1"
+			+ "where transfer.executionDate= ?1 and "
+			+ "transfer.state=(select s from State s where s.code ='3000')"
 			+ " ")
 	public List<Transaction> transactionToExecuteToday(LocalDate date);
 
 	@Query("select distinct transfer from Transaction transfer where concat('R',transfer.idTransaction)=?1")
 	public Transaction findByReference(String reference);
 
-	List<Transaction>/*Page<Transaction>*/ findByCreatedBy(String userRegistrationNumber/*, Pageable pageable*/);
+	List<Transaction>findByCreatedBy(String userRegistrationNumber);
 
 	@Query("SELECT t FROM Transaction t where t.state.code = :stateCode")
 	List<Transaction> findByState(@Param("stateCode") String stateCode);

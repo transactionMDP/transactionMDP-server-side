@@ -2,6 +2,7 @@
 
 import com.bcp.mdp.dao.TransactionDao;
 import com.bcp.mdp.dao.TransferTypeDao;
+import com.bcp.mdp.dto.MailMessageDto;
 import com.bcp.mdp.dto.TarificationOfTransaction;
 import com.bcp.mdp.dto.TransferDto;
 import com.bcp.mdp.model.Account;
@@ -10,6 +11,8 @@ import com.bcp.mdp.model.Currency;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.security.UserPrincipal;
+import com.bcp.mdp.util.AppConstants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +20,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 @Component("transferService")
 public class TransferInBPServiceV1 implements ITransferInBPService {
@@ -81,14 +87,31 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		TransferType transferType=tarificationService.verifyTransferType(debitAccountNumber, creditAccountNumber);
 		Commission commission =tarificationService.retrieveTarification(transferType);
 		
+		// verifier s'il doit avoir échange
+		String currency=transfer.getTransactionCurrency();
+		String currencyDebit=accountService.retrieveAccountCurrency(debitAccountNumber);
+		String currencyCredit=accountService.retrieveAccountCurrency(creditAccountNumber);
+		if(!currency.equals(AppConstants.LOCAL_CURRENCY)
+				|| !currency.equals(currencyDebit)
+				|| !currency.equals(currencyCredit)) {
+			
+		}
+		
 		double amount=transfer.getTransactionAmount();
 		double comm=amount*commission.getCommissionRate();
 		double tva=comm*commission.getTvaRate();
 		double sumAmount=amount+comm+tva;
-		if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
+		if(accountService.retrieveFreeBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
 			createTransaction(transfer,commission,transferType);
 			accountService.addObligation(debitAccountNumber, sumAmount);
 			return "OK";
+		}
+		
+		else {
+			if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
+				
+				return "Vous avez  déjà des transactions en attente";
+			}
 		}
 		
 		return "Solde insuffisant";
@@ -145,7 +168,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 	}*/
 	
 	@Override
-	public void executeTransaction(Transaction transaction) {
+	public void executeTransaction(Transaction transaction) throws MessagingException, IOException {
 		double amount=transaction.getAmount();
 		double commission=amount*transaction.getCommission().getCommissionRate();
 		double tva=commission*transaction.getCommission().getTvaRate();
@@ -178,6 +201,20 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		
 		accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
 		 updateTransactionState(transaction.getReference(), "6000");
+		 
+		 MailMessageDto mail= new MailMessageDto();
+		 String nameDebiter=accountService.retrieveAccountCustomerName(transaction.getDebitAccount().getAccountNumber());
+		 String emailDebiter=accountService.retrieveAccountCustomerEmail(transaction.getDebitAccount().getAccountNumber());
+		 String nameCrediter=accountService.retrieveAccountCustomerName(transaction.getCreditAccount().getAccountNumber());
+		 String emailCrediter=accountService.retrieveAccountCustomerEmail(transaction.getCreditAccount().getAccountNumber());
+		 
+		 mail.setNameOfCreditor(nameCrediter);
+		 mail.setNameOfDebitor(nameDebiter);
+		 mail.setToCreditAccount(emailCrediter);
+		 mail.setToDebitAccount(emailDebiter);
+		 mail.setAmountOfTransaction(transaction.getAmount());
+		 
+		 MailNotificationService.sendSimpleMessage(mail);
 		
 	}
 	
@@ -193,7 +230,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		
 	}
 	@Override
-	public void  doTransactionOfExecutionDayToday(List<Transaction> transactions) {
+	public void  doTransactionOfExecutionDayToday(List<Transaction> transactions) throws MessagingException, IOException {
 		// this function execute(debit and credit) transaction whom ecécuteDay equals today
 
 		for(Transaction transaction: transactions)
@@ -238,11 +275,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		return transferDao.findAll();
 	}
 
-	/*@Override
-	public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
+	
 	@Override
 	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size) {
 		//validatePageNumberAndSize(page, size);
@@ -272,9 +305,5 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		return null;
 	}
 
-	@Override
-	public void doTransactionOfExecutionDayToday() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

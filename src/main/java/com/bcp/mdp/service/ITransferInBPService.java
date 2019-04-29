@@ -6,9 +6,12 @@ import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.security.UserPrincipal;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 public interface ITransferInBPService {
 
@@ -52,13 +55,11 @@ public interface ITransferInBPService {
 
 	void updateTransactionState(String transactionRef, String codeState);
 
-	void doTransactionOfExecutionDayToday();
+	//	List<Transaction> retrieveTransactionsToExecuteToday();
 
-//	List<Transaction> retrieveTransactionsToExecuteToday();
+	void doTransactionOfExecutionDayToday(List<Transaction> transactions) throws MessagingException, IOException;
 
-	void doTransactionOfExecutionDayToday(List<Transaction> transactions);
-
-	void executeTransaction(Transaction transaction);
+	void executeTransaction(Transaction transaction) throws MessagingException, IOException;
 	Transaction retrieveByReference(String reference);
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
 	void createTransaction(TransferDto transfer, Commission commission, TransferType transferType);

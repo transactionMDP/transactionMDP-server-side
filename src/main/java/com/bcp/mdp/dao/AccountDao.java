@@ -79,6 +79,9 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 	@Query("Select a.balance From Account a Where a.accountNumber= :number")
 	double findBalanceForAccountNumber(@Param("number") long number);
 	
+	@Query("Select a.freeBalance From Account a Where a.accountNumber= ?1")
+	double findFreeBalanceForAccountNumber(long accountNumber);
+	
 	@Query("Select a From Account a Where a.accountNumber= :number")
     Account findAccountByAccountNumber(@Param("number") long number);
 	
@@ -94,7 +97,15 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ "where  a.accountNumber= :AccountNumber")
 	public State findStateForAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
+	@Query("Select customer.email From Account a "
+			+ " inner join a.accountCustomer customer "
+			+ "where  a.accountNumber= :AccountNumber")
+	public String findAccountCustomerEmail(@Param("AccountNumber") long AccountNumber);
 
+	@Query("Select customer.name From Account a "
+			+ " inner join a.accountCustomer customer "
+			+ "where  a.accountNumber= :AccountNumber")
+	public String findAccountCustomerName(@Param("AccountNumber") long AccountNumber);
 	@Query("Select currency.name From Account a  "
 			+ " inner join a.accountCurrency currency  "
 			+ " on  a.accountNumber= :AccountNumber")

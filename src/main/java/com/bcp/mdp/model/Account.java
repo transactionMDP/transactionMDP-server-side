@@ -14,6 +14,7 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 
@@ -25,9 +26,7 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Entity(
-		dynamicInsert = true
-)
+
 public class Account implements Serializable{
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -48,7 +47,7 @@ public class Account implements Serializable{
 
 	//@Column(columnDefinition="double default 0")
 	@Generated(GenerationTime.ALWAYS)
-	@Column(columnDefinition="double default 0")
+	@Formula("balance-obligation")
 	double freeBalance; // that is a real free balance on a account , its is balance-obligation
 	
 	@ManyToOne

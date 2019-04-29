@@ -19,7 +19,7 @@ import java.util.Set;
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Seuil  implements Serializable{
-	
+	// cette classe est pour preciser que le taux de change est selon un seuil
 	@Id
 	@GeneratedValue()
 	long idSeuil;
