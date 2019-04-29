@@ -30,7 +30,7 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
 			+ " ")
 	public List<Transaction> transactionToExecuteToday(LocalDate date);
 
-	@Query("select distinct transfer from Transaction transfer where concat('R',transfer.idTransaction)=?1")
+	@Query("select distinct transfer from Transaction transfer where transfer.reference=?1")
 	public Transaction findByReference(String reference);
 
 	List<Transaction>findByCreatedBy(String userRegistrationNumber);

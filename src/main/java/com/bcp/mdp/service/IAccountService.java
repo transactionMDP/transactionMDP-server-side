@@ -46,12 +46,9 @@ public interface IAccountService {
 	double retrieveFreeBalanceByAccountNumber(long accountNumber);
 	void removeObligation(long debitaccountNumber, double amount);
 	void addObligation(long debitaccountNumber, double amount);
-<<<<<<< HEAD
+
 	String retrieveAccountCustomerEmail(long accountNumber);
 	String retrieveAccountCustomerName(long accountNumber);
 	
-=======
->>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
-
 	String getCustomerCategoryByAccountId(Long idAccount);
 }

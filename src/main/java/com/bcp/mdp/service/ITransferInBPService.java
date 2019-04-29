@@ -62,6 +62,6 @@ public interface ITransferInBPService {
 	void executeTransaction(Transaction transaction) throws MessagingException, IOException;
 	Transaction retrieveByReference(String reference);
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
-	void createTransaction(TransferDto transfer, Commission commission, TransferType transferType);
+	void createTransaction(TransferDto transfer);
 	List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date);
 }

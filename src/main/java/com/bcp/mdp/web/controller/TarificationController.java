@@ -27,7 +27,7 @@ public class TarificationController {
 		 * le troisième  element est le montant de la transaction
 		 */
 		//System.out.println(exchangeService.convertCurrencyAmount("MAD","USD",100));
-		exchangeService.valorisation(2728,123);
+		//exchangeService.valorisation(2728,123,"MAD","USD");
 		return tarificationService.retrieveTarification(commission.getAccountN1(), commission.getAccountN2(),commission.getAmount());
 	}
 

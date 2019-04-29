@@ -105,15 +105,15 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ "where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerEmail(@Param("AccountNumber") long AccountNumber);
 
-<<<<<<< HEAD
+
 	@Query("Select customer.name From Account a "
 			+ " inner join a.accountCustomer customer "
 			+ "where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerName(@Param("AccountNumber") long AccountNumber);
-	@Query("Select currency.name From Account a  "
-=======
+	
+
 	@Query("Select currency.code From Account a  "
->>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
+
 			+ " inner join a.accountCurrency currency  "
 			+ " on  a.accountNumber= :AccountNumber")
 	public String findCurrencyForAccountNumber(@Param("AccountNumber") long AccountNumber);

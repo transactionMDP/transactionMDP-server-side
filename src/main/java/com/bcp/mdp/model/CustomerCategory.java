@@ -33,7 +33,4 @@ public class CustomerCategory implements Serializable{
 	@JsonBackReference
 	Set<CustomerSubCategory> customerSubCategories;
 	
-	@OneToMany(mappedBy="customerCategory")
-	@JsonBackReference
-	Set<ExchangeRate> exchanges;
 }
