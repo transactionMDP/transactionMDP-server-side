@@ -21,6 +21,9 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 	public List<Account> findByAccountCategory(Long accountCategoryId);
 	@Query("select a.accountCategory from Account a")
 	public List<AccountCategory> findAccountCategory();
+
+	@Query("select a.accountCustomer.customerCategory.type from Account a where a.accountNumber=:number")
+	public String findCustomerCategoryByAccountId(@Param("number") Long number);
 	
 	@Query("select a.accountResident from Account a")
 	public List<Account> findAccountResident(Long residenceId);
@@ -102,11 +105,15 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ "where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerEmail(@Param("AccountNumber") long AccountNumber);
 
+<<<<<<< HEAD
 	@Query("Select customer.name From Account a "
 			+ " inner join a.accountCustomer customer "
 			+ "where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerName(@Param("AccountNumber") long AccountNumber);
 	@Query("Select currency.name From Account a  "
+=======
+	@Query("Select currency.code From Account a  "
+>>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
 			+ " inner join a.accountCurrency currency  "
 			+ " on  a.accountNumber= :AccountNumber")
 	public String findCurrencyForAccountNumber(@Param("AccountNumber") long AccountNumber);

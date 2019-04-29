@@ -245,4 +245,8 @@ public class AccountServiveV1 implements IAccountService {
 	}
 
 
+	@Override
+	public String getCustomerCategoryByAccountId(Long idAccount) {
+		return accountdao.findCustomerCategoryByAccountId(idAccount);
+	}
 }

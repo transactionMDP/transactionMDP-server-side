@@ -23,8 +23,8 @@ public class AccountController {
 		
 	}
 
-	@PostMapping(value="/getAccountDetail")
-	public Account retrieveAccountDetail(@RequestBody long accountNumber) {
+	@GetMapping("/getAccountDetail/{accountNumber}")
+	public Account retrieveAccountDetail(@PathVariable(value = "accountNumber") long accountNumber) {
 		
 		return accountService.retrieveAccountByAccountNumber(accountNumber);
 		

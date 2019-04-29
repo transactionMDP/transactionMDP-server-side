@@ -11,15 +11,17 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransferDto {
+	 String transactionType;
 	 long principalAccount;
 	 long beneficiaryAccount ;
 	 String transferReason;
 	 LocalDate executionDate;
 	 String chargeType;
 	 String transactionCurrency;
+	 boolean applyCommission;
 	 double commissionRate;
 	 double commissionAmount;
 	 double commissionTVA;
 	 double transactionAmount;
-
+	 boolean isExchange;
 }

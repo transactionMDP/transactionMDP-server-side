@@ -4,6 +4,6 @@ import com.bcp.mdp.model.Currency;
 
 public interface ICurrencyService {
 	
-	public Currency retrieveCurrencyByName(String name);
+	public Currency retrieveCurrencyByCode(String code);
 
 }

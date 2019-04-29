@@ -73,7 +73,7 @@ public class Account implements Serializable{
 	
 	@ManyToOne
 	@JsonManagedReference
-	@JoinColumn(name="currency" , referencedColumnName="name")
+	@JoinColumn(name="currency" , referencedColumnName="code")
     Currency accountCurrency;
 	
 	@ManyToOne 
@@ -104,5 +104,5 @@ public class Account implements Serializable{
 	@JsonBackReference
 	Set<Transaction> transactionsDebit;
 
-	
+
 }

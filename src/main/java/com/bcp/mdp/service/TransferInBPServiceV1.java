@@ -1,4 +1,4 @@
-﻿package com.bcp.mdp.service;
+package com.bcp.mdp.service;
 
 import com.bcp.mdp.dao.TransactionDao;
 import com.bcp.mdp.dao.TransferTypeDao;
@@ -32,26 +32,88 @@ import javax.mail.MessagingException;
 @Component("transferService")
 public class TransferInBPServiceV1 implements ITransferInBPService {
 
-	@Autowired
-	private TransactionDao transferDao;
-	
-	@Autowired 
-	private TransferTypeDao transferTypeDao;
-	
-	@Autowired
-	private IAccountService accountService;
-	
-	@Autowired
-	private ITarificationService tarificationService;
-	@Autowired
-	private ICurrencyService currencyService;
-	
-	@Autowired
-	private IStateService stateService;
-	
-	@Autowired
-	private ICommissionService commissionService;
+    @Autowired
+    private TransactionDao transferDao;
 
+    @Autowired
+    private TransferTypeDao transferTypeDao;
+
+    @Autowired
+    private IAccountService accountService;
+
+    @Autowired
+    private ITarificationService tarificationService;
+    @Autowired
+    private ICurrencyService currencyService;
+
+    @Autowired
+    private IStateService stateService;
+
+    @Autowired
+    private ICommissionService commissionService;
+
+    @Override
+    public void createTransaction(TransferDto transfer,Commission commission,TransferType transferType) {
+
+        Transaction transactionForPersistance =new Transaction() ;
+
+        Account debitAccount=accountService.retrieveAccountByAccountNumber(transfer.getPrincipalAccount());
+        Account creditAccount=accountService.retrieveAccountByAccountNumber(transfer.getBeneficiaryAccount());
+        transactionForPersistance.setDebitAccount(debitAccount);
+        transactionForPersistance.setCreditAccount(creditAccount);
+        transactionForPersistance.setAmount(transfer.getTransactionAmount());
+        transactionForPersistance.setExecutionDate(transfer.getExecutionDate());
+        transactionForPersistance.setTransferReason(transfer.getTransferReason());
+
+        Currency currency= currencyService.retrieveCurrencyByCode(transfer.getTransactionCurrency());
+        transactionForPersistance.setTransactionCurrency(currency);
+        transactionForPersistance.setTypeTransferSource(transfer.getTransactionType());
+        transactionForPersistance.setState(stateService.retrieveStateByLibelle("1000"));
+
+        if(transfer.isApplyCommission()){
+            commissionService.persist(commission);
+            transactionForPersistance.setCommission(commission);
+        }
+
+        if(transfer.isExchange()){
+            /*exchangeService.persist(exchange);
+            transactionForPersistance.setExchange(exchange);*/
+        }
+
+        transferDao.save(transactionForPersistance);
+    }
+
+    @Override
+    public void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission) {
+
+    }
+
+    @Override
+    public String doTransfer( TransferDto transfer) {
+        long debitAccountNumber=transfer.getPrincipalAccount();
+        long creditAccountNumber=transfer.getBeneficiaryAccount();
+
+        // La commission
+        TransferType transferType=tarificationService.verifyTransferType(debitAccountNumber, creditAccountNumber);
+        Commission commission =tarificationService.retrieveTarification(transferType);
+
+        double amount=transfer.getTransactionAmount();
+        double comm=amount*commission.getCommissionRate();
+        double tva=comm*commission.getTvaRate();
+        double sumAmount=amount+comm+tva;
+
+        if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=sumAmount) {
+            createTransaction(transfer,commission,transferType);
+
+            accountService.addObligation(debitAccountNumber, sumAmount);
+
+            return "OK";
+        }
+
+        return "Solde insuffisant";
+    }
+
+<<<<<<< HEAD
 	@Override
 	public void createTransaction(TransferDto transfer,Commission commission,TransferType transferType) {
 		// TODO Auto-generated method stub
@@ -117,16 +179,18 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		return "Solde insuffisant";
 	}
 	
+=======
+>>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
 	/*@Override
 	public void doTransfer( TransferDto transfer) {
 		// TODO Auto-generated method stub
 		long debitAccountNumber=transfer.getPrincipalAccount();
 		long creditAccountNumber=transfer.getBeneficiaryAccount();
 		double amount=transfer.getTransactionAmount();
-		
+
 		TransferType transferType=tarificationService.verifyTransferType(debitAccountNumber, creditAccountNumber);
 		TarificationOfTransaction tarification=tarificationService.retrieveTarification(transferType, amount);
-	
+
 		if(accountService.retrieveBalanceByAccountNumber(debitAccountNumber)>=amount+tarification.getSumAmount()) {
 
 			String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(debitAccountNumber);
@@ -138,23 +202,23 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(creditAccountNumber);
 				Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
 				Long bprLinkaccountCredit=accountService.retrieveBprLinkAccount(instituteReferenceForCreditAccount);
-				
-				
+
+
 				accountService.creditAccount(bprLinkaccountDebtit, amount);
 				createTransaction(transfer,debitAccountNumber,bprLinkaccountDebtit);
-				
+
 				accountService.debitAccount(bprLinkaccountDebtit, amount);
 				accountService.creditAccount(bprLinkaccountCredit, amount);
 				createTransaction(transfer,bprLinkaccountDebtit,bprLinkaccountCredit);
-				
+
 				accountService.debitAccount(bprLinkaccountCredit, amount);
 				accountService.creditAccount(creditAccountNumber, amount);
 				createTransaction(transfer,bprLinkaccountCredit,creditAccountNumber );
-				
+
 			}
 			else {
 
-				
+
 			accountService.creditAccount(creditAccountNumber, amount);
 			createTransaction(transfer,debitAccountNumber,creditAccountNumber);
 
@@ -162,11 +226,10 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				createTransaction(transfer,debitAccountNumber,creditAccountNumber);
 
 			}
-			
+
 		}
 
 	}*/
-	
 	@Override
 	public void executeTransaction(Transaction transaction) throws MessagingException, IOException {
 		double amount=transaction.getAmount();
@@ -200,6 +263,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		}
 		
 		accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
+<<<<<<< HEAD
 		 updateTransactionState(transaction.getReference(), "6000");
 		 
 		 MailMessageDto mail= new MailMessageDto();
@@ -222,8 +286,13 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 	public void updateTransactionState(String transactionRef, String codeState) {
 		
 		transferDao.updateTransactionState(transactionRef, codeState);
+=======
+
+		updateTransactionState(transaction.getReference(), "6000");
+>>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
 		
 	}
+
 	@Override
 	public List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date){
 		return transferDao.transactionToExecuteToday(date);
@@ -239,71 +308,104 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		}
 		
 	}
-	
-	@Override
-	public Transaction retrieveByReference(String reference) {
-		return transferDao.findByReference(reference);
-	}
 
-	@Override
-	public void tariffyTransfer() {
-		// TODO Auto-generated method stub
+    @Override
+    public void updateTransactionState(String transactionRef, String codeState) {
 
-	}
+        transferDao.updateTransactionState(transactionRef, codeState);
 
-	@Override
-	public void accountTransfer() {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    /*public List<Transaction> retrieveTransactionsToExecuteToday(){
+        return transferDao.findByExecutionDateAndExecuted(new Date(), false);
 
-	@Override
-	public Transaction checkTransfer(long transactionId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }*/
 
-	@Override
-	public Transaction retrieveTransfer(long transactionId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Transaction retrieveByReference(String reference) {
+        return transferDao.findByReference(reference);
+    }
 
-	@Override
-	public List<Transaction> retrieveTransfers() {
-		// TODO Auto-generated method stub
-		return transferDao.findAll();
-	}
+    @Override
+    public void tariffyTransfer() {
+        // TODO Auto-generated method stub
 
+<<<<<<< HEAD
 	
 	@Override
 	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size) {
 		//validatePageNumberAndSize(page, size);
 		return transferDao.findByCreatedBy(currentUser);
 	}
+=======
+    }
+>>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
 
-	@Override
-	public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size) {
-		return transferDao.findByState(stateCode);
-	}
+    @Override
+    public void accountTransfer() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public List<Transaction> retrieveTransactionDoInInstitute(String instituteReference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
 
-	@Override
-	public List<Transaction> retrieveTransactionDoAtOperationDate(Date date) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Transaction checkTransfer(long transactionId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public List<Transaction> retrieveTransactionDoAtOperationDateOnAccount(long accountId, Date date) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Transaction retrieveTransfer(long transactionId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
+<<<<<<< HEAD
 	
+=======
+    @Override
+    public List<Transaction> retrieveTransfers() {
+        // TODO Auto-generated method stub
+        return transferDao.findAll();
+    }
+
+    /*@Override
+    public List<Transaction> retrieveTransactionDoByTeller(long TellerRegistrationNumber) {
+        // TODO Auto-generated method stub
+        return null;
+    }*/
+    @Override
+    public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(String currentUser, int page, int size) {
+        //validatePageNumberAndSize(page, size);
+        return transferDao.findByCreatedBy(currentUser);
+    }
+
+    @Override
+    public List<Transaction>/*PagedResponse<Transaction>*/ getTransfersByState(String stateCode, int page, int size) {
+        return transferDao.findByState(stateCode);
+    }
+
+    @Override
+    public List<Transaction> retrieveTransactionDoInInstitute(String instituteReference) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Transaction> retrieveTransactionDoAtOperationDate(Date date) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Transaction> retrieveTransactionDoAtOperationDateOnAccount(long accountId, Date date) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void doTransactionOfExecutionDayToday() {
+        // TODO Auto-generated method stub
+
+    }
+>>>>>>> 6dee1705fdd3168924339d43b4034cf98f25300c
 }

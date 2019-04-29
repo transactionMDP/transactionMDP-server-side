@@ -4,6 +4,7 @@ import com.bcp.mdp.dto.CommissionDto;
 import com.bcp.mdp.dto.TarificationOfTransaction;
 
 import com.bcp.mdp.model.TransferType;
+import com.bcp.mdp.service.IExchangeService;
 import com.bcp.mdp.service.ITarificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ public class TarificationController {
 	@Autowired
     ITarificationService tarificationService;
 
+	@Autowired
+	IExchangeService exchangeService;
+
 	@PostMapping("/tarifier")
 	public TarificationOfTransaction tarif(@RequestBody CommissionDto commission) {
 		/*reception d'un tableau dont:
@@ -22,6 +26,8 @@ public class TarificationController {
 		 * le deuxième element est le compte à crediter
 		 * le troisième  element est le montant de la transaction
 		 */
+		//System.out.println(exchangeService.convertCurrencyAmount("MAD","USD",100));
+		exchangeService.valorisation(2728,123);
 		return tarificationService.retrieveTarification(commission.getAccountN1(), commission.getAccountN2(),commission.getAmount());
 	}
 
