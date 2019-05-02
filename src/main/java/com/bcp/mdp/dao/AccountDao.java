@@ -2,6 +2,7 @@ package com.bcp.mdp.dao;
 
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -122,6 +123,9 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ " inner join a.accountResident residence "
 			+ " on  a.accountNumber= :AccountNumber")
 	public String findResidenceForAccountNumber(@Param("AccountNumber") long AccountNumber);
+	
+	@Query("Select a.accountCustomer From Account a where  a.accountNumber= :AccountNumber")
+	public Customer findAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
 
 	

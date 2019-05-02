@@ -3,10 +3,12 @@ package com.bcp.mdp.model;
 import java.sql.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +26,14 @@ public class Commission {
 	long id;
 	double commissionRate;
 	double tvaRate;
-	double exchangeRate;
+	@Column(columnDefinition=" default 1")
+	double exchangeTransferCurrencyToOther;
+	@Column(columnDefinition=" default 1")
+	double exchangeTransferCurrencyToMAD;
+	
+	@Transient
+	boolean transactionCurrencyEqualsDebitCurrency;
+
 
 
 }

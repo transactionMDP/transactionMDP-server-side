@@ -2,6 +2,7 @@ package com.bcp.mdp.service;
 
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 
 import java.util.List;
@@ -51,4 +52,5 @@ public interface IAccountService {
 	String retrieveAccountCustomerName(long accountNumber);
 	
 	String getCustomerCategoryByAccountId(Long idAccount);
+	Customer retrieveAccountCustomer(long accountNumber);
 }

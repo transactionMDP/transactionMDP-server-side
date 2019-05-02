@@ -27,6 +27,8 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// mettre à jour les cours instantannée d'echange
 	}
 
 }

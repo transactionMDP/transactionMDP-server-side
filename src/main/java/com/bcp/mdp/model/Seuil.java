@@ -23,7 +23,7 @@ public class Seuil  implements Serializable{
 	@Id
 	@GeneratedValue()
 	long idSeuil;
-	double  type;
+	String  type;
 	double value; 
 	
 	@OneToMany(mappedBy="seuil")

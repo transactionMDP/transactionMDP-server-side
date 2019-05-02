@@ -21,8 +21,12 @@ public class TransferDto {
 	 boolean applyCommission;
 	 double commissionRate;
 	 double commissionAmount;
+	 double TVARate;
 	 double commissionTVA;
 	 double transactionAmount;
-	 boolean isExchange;
+	 boolean transactionCurrencyEqualsDebitCurrency;
+ 
+	 double exchangeTransferCurrencyToOther;
+	 double exchangeTransferCurrencyToMAD;
 	 
 }

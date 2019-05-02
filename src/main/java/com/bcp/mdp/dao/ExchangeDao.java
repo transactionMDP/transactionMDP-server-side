@@ -19,5 +19,7 @@ public interface ExchangeDao extends JpaRepository<ExchangeRate, Long> {
 	@Query("select e.individualNegociatedCourse from ExchangeRate e where e.sellCurrency.code=:fromC and e.buyCurrency.code=:toC")
 	double getIndividualNegociatedCourseRate(@Param("fromC") String fromC, @Param("toC") String toC);
 
+	@Query("select e.preferentialCourse from ExchangeRate e where e.sellCurrency.code=:fromC and e.buyCurrency.code=:toC")
+	double getPreferentialCourseRate(@Param("fromC") String fromC, @Param("toC") String toC);
 	/*Currency findByCode(String code);*/
 }

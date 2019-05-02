@@ -23,6 +23,7 @@ public class ExchangeRate implements Serializable {
 	double instantCourse;
 	double batchNegociatedCourse;
 	double individualNegociatedCourse;
+	double preferentialCourse;
 
 	@OneToOne
 	@JsonManagedReference

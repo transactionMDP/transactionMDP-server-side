@@ -3,6 +3,7 @@ package com.bcp.mdp.service;
 import com.bcp.mdp.dao.AccountDao;
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -248,5 +249,10 @@ public class AccountServiveV1 implements IAccountService {
 	@Override
 	public String getCustomerCategoryByAccountId(Long idAccount) {
 		return accountdao.findCustomerCategoryByAccountId(idAccount);
+	}
+	
+	@Override
+	public Customer retrieveAccountCustomer(long accountNumber ) {
+		return accountdao.findAccountCustomer(accountNumber);
 	}
 }
