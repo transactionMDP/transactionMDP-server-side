@@ -2,12 +2,7 @@ package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -29,7 +24,7 @@ public class AccountSubCategory  implements Serializable {
 	
 	@OneToMany(mappedBy="accountSubCategory")
 	@JsonBackReference
-	private Set<AccountSubCategoryNature> AccountSubCategoryNature;
+	private Set<com.bcp.mdp.model.AccountSubCategoryNature> AccountSubCategoryNature;
 
 
 }

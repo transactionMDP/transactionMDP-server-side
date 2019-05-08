@@ -1,17 +1,13 @@
 package com.bcp.mdp.dto;
 
-import java.time.LocalDate;
-import java.util.Date;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransferDto {
-	 String transactionType;
+	 String transactionSource;
 	 long principalAccount;
 	 long beneficiaryAccount ;
 	 String transferReason;
@@ -21,7 +17,13 @@ public class TransferDto {
 	 boolean applyCommission;
 	 double commissionRate;
 	 double commissionAmount;
+	 double TVARate;
 	 double commissionTVA;
 	 double transactionAmount;
-	 boolean isExchange;
+	 boolean transactionCurrencyEqualsDebitCurrency;
+ 
+	 double exchangeTransferCurrencyToOther;
+	 double exchangeTransferCurrencyToMAD;
+	 String transferNature;
+	 
 }

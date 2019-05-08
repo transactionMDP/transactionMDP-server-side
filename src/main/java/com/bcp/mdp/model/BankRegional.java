@@ -2,12 +2,7 @@ package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
@@ -24,7 +19,7 @@ public class BankRegional extends Institute implements Serializable{
 	@OneToOne
 	@JsonManagedReference
 	@JoinColumn(name="bcp"/* , referencedColumnName="instituteReference"*/)
-	BankCentralPop bcp;
+    BankCentralPop bcp;
 	
 	@OneToMany(mappedBy="bankRegional")
 	@JsonBackReference

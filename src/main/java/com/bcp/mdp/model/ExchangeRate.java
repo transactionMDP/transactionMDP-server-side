@@ -1,12 +1,7 @@
 package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -23,20 +18,18 @@ public class ExchangeRate implements Serializable {
 	double instantCourse;
 	double batchNegociatedCourse;
 	double individualNegociatedCourse;
+	double preferentialCourse;
 
 	@OneToOne
 	@JsonManagedReference
 	@JoinColumn(name="fromCurrency" , referencedColumnName="code")
-	Currency sellCurrency;
+    Currency sellCurrency;
 
 	@OneToOne
 	@JsonManagedReference
 	@JoinColumn(name="toCurrency" , referencedColumnName="code")
     Currency buyCurrency;
 	
-	@OneToOne 
-	@JsonManagedReference
-    CustomerCategory customerCategory;
 	
 	@OneToOne
 	@JsonManagedReference

@@ -1,16 +1,10 @@
 package com.bcp.mdp.model;
 
 
-
-import javax.persistence.Entity;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.Entity;
 import java.io.Serializable;
 
 @Entity

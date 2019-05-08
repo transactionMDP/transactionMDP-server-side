@@ -2,6 +2,7 @@ package com.bcp.mdp.service;
 
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 
 import java.util.List;
@@ -47,5 +48,9 @@ public interface IAccountService {
 	void removeObligation(long debitaccountNumber, double amount);
 	void addObligation(long debitaccountNumber, double amount);
 
+	String retrieveAccountCustomerEmail(long accountNumber);
+	String retrieveAccountCustomerName(long accountNumber);
+	
 	String getCustomerCategoryByAccountId(Long idAccount);
+	Customer retrieveAccountCustomer(long accountNumber);
 }

@@ -2,21 +2,11 @@ package com.bcp.mdp.model;
 
 import com.bcp.mdp.model.audit.UserDateAudit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-
-import org.springframework.data.annotation.CreatedDate;
-
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -28,15 +18,10 @@ public class Transaction  extends UserDateAudit {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	long idTransaction;
 	
-
-	//@Generated(value = GenerationTime.INSERT)
-	//@Column(columnDefinition="VARCHAR(255) default concat ('#',idTransaction)")
+	@Formula("concat('000',id_Transaction)")
 	String reference; // la reference de la transaction sera une concatenation du type de source et de l'id
-	@PostLoad  
-	void setReference() {
-		this.reference="R"+this.idTransaction;
-	}
-	String typeTransferSource; // pour preciser si ça provient de l'agence , du e-banking ...;
+	
+	
 	String transferReason; //pour preciser le motif de la transaction;
 	String reasonOfRefuse; //  optionnel , seullement si la transaction a été  refusé
 	Date operationDate; //la date de la transaction qui est la date du jour;,
@@ -45,6 +30,13 @@ public class Transaction  extends UserDateAudit {
 	Date creditDate; // date de valeur au credit;
 	double amount; // montant total  de la transaction qui inclut le montant initié , la commission et la tva;
 	
+	String chargeType;
+	boolean applyCommission;
+	
+	@ManyToOne
+	@JsonManagedReference
+	@JoinColumn(name="source")
+    TransferSource source;    // pour preciser si ça provient de l'agence , du e-banking ...;
 	
 	@ManyToOne
 	@JsonManagedReference
@@ -72,6 +64,6 @@ public class Transaction  extends UserDateAudit {
     TransferType transactionTransferType; // pour preciser si c'est intra-agence, intra-BPR,
 
 	@OneToOne
-	Commission commission;
+    Commission commission;
 
 }

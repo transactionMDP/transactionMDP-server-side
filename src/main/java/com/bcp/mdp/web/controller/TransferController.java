@@ -1,12 +1,14 @@
 package com.bcp.mdp.web.controller;
 
 import com.bcp.mdp.dto.TransferDto;
+import com.bcp.mdp.exception.AppException;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.security.CurrentUser;
 import com.bcp.mdp.security.UserPrincipal;
 import com.bcp.mdp.service.ITransferInBPService;
 import com.bcp.mdp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,8 +24,8 @@ public class TransferController {
 	private ITransferInBPService transferService;
 	
 	@PostMapping("/dotransfer")
-	public String doTransfer(@RequestBody TransferDto transfer) {
-		return transferService.doTransfer(transfer);
+	public String /*ResponseEntity<?>*/ doTransfer(@CurrentUser UserPrincipal currentUser, @RequestBody TransferDto transfer) {
+		return transferService.doTransfer(currentUser,transfer);
 	}
 	
 	@GetMapping("/list")
@@ -40,22 +42,22 @@ public class TransferController {
 
 	@GetMapping("/me")
 	public List<Transaction>/*PagedResponse<Transaction>*/ getUserTransfers(@CurrentUser UserPrincipal currentUser,
-												   @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-												   @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+                                                                            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 		return transferService.getUserTransfers(currentUser.getUsername(), page, size);
 	}
 
 	@GetMapping("/ctrllist")
 	public List<Transaction>/*PagedResponse<Transaction>*/ getCTRLTransfers(@CurrentUser UserPrincipal currentUser,
-																			@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-																			@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+                                                                            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 		return transferService.getTransfersByState("1000", page, size);
 	}
 
 	@GetMapping("/ctnlist")
 	public List<Transaction>/*PagedResponse<Transaction>*/ getCTNTransfers(@CurrentUser UserPrincipal currentUser,
-																		@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-																		@RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+                                                                           @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                           @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 		return transferService.getTransfersByState("2000", page, size);
 	}
 	

@@ -2,6 +2,7 @@ package com.bcp.mdp.dao;
 
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -82,6 +83,9 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 	@Query("Select a.balance From Account a Where a.accountNumber= :number")
 	double findBalanceForAccountNumber(@Param("number") long number);
 	
+	@Query("Select a.freeBalance From Account a Where a.accountNumber= ?1")
+	double findFreeBalanceForAccountNumber(long accountNumber);
+	
 	@Query("Select a From Account a Where a.accountNumber= :number")
     Account findAccountByAccountNumber(@Param("number") long number);
 	
@@ -97,8 +101,20 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ "where  a.accountNumber= :AccountNumber")
 	public State findStateForAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
+	@Query("Select customer.email From Account a "
+			+ " inner join a.accountCustomer customer "
+			+ "where  a.accountNumber= :AccountNumber")
+	public String findAccountCustomerEmail(@Param("AccountNumber") long AccountNumber);
+
+
+	@Query("Select customer.name From Account a "
+			+ " inner join a.accountCustomer customer "
+			+ "where  a.accountNumber= :AccountNumber")
+	public String findAccountCustomerName(@Param("AccountNumber") long AccountNumber);
+	
 
 	@Query("Select currency.code From Account a  "
+
 			+ " inner join a.accountCurrency currency  "
 			+ " on  a.accountNumber= :AccountNumber")
 	public String findCurrencyForAccountNumber(@Param("AccountNumber") long AccountNumber);
@@ -107,6 +123,9 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ " inner join a.accountResident residence "
 			+ " on  a.accountNumber= :AccountNumber")
 	public String findResidenceForAccountNumber(@Param("AccountNumber") long AccountNumber);
+	
+	@Query("Select a.accountCustomer From Account a where  a.accountNumber= :AccountNumber")
+	public Customer findAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
 
 	

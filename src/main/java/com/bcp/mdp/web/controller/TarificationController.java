@@ -2,7 +2,6 @@ package com.bcp.mdp.web.controller;
 
 import com.bcp.mdp.dto.CommissionDto;
 import com.bcp.mdp.dto.TarificationOfTransaction;
-
 import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.service.IExchangeService;
 import com.bcp.mdp.service.ITarificationService;
@@ -17,7 +16,7 @@ public class TarificationController {
     ITarificationService tarificationService;
 
 	@Autowired
-	IExchangeService exchangeService;
+    IExchangeService exchangeService;
 
 	@PostMapping("/tarifier")
 	public TarificationOfTransaction tarif(@RequestBody CommissionDto commission) {
@@ -27,7 +26,7 @@ public class TarificationController {
 		 * le troisième  element est le montant de la transaction
 		 */
 		//System.out.println(exchangeService.convertCurrencyAmount("MAD","USD",100));
-		exchangeService.valorisation(2728,123);
+		//exchangeService.valorisation(2728,123,"MAD","USD");
 		return tarificationService.retrieveTarification(commission.getAccountN1(), commission.getAccountN2(),commission.getAmount());
 	}
 

@@ -16,10 +16,20 @@ insert into Currency values(2,'MAC', 'Moroccan Dirham C');
 insert into Currency values(3,'EUR','Euro');
 insert into Currency values(4,'USD', 'US Dollar');
 
-insert into Exchange_Rate values(1,'MAD','USD',0.103,0.104,0.105,null,null);
-insert into Exchange_Rate values(2,'MAD','EUR',0.092,0.093,0.094,null,null;
-insert into Exchange_Rate values(3,'USD','MAD',9.666,9.667,9.668,null,null);
-insert into Exchange_Rate values(4,'EUR','MAD',10.787,10.788,10.789,null,null;
+insert into Exchange_Rate values(1,'MAD','USD',0.103,0.104,1,0.105,null,null);
+insert into Exchange_Rate values(2,'MAD','EUR',0.092,0.093,1,0.094,null,null;
+insert into Exchange_Rate values(3,'USD','MAD',9.666,9.667,1,9.668,null,null);
+insert into Exchange_Rate values(4,'EUR','MAD',10.787,10.788,1,10.789,null,null;
+
+insert into Transfer_Source values (1,'IEA','Intra en agence');
+insert into Transfer_Source values (2,'IAC','Intra au ctn');
+insert into Transfer_Source values (3,'MBK','M-banking');
+insert into Transfer_Source values (1,'EBK','E-banking');
+insert into Transfer_Source values (1,'GAB','Guichet automatique bancaire');
+insert into Transfer_Source values (1,'FDM','Flux de masse');
+insert into Transfer_Source values (1,'PMI','Permanent intra');
+insert into Transfer_Source values (1,'FTC','Fonction centrale');
+
 
 insert into Account_Category values(1,'compte de gestion');
 insert into Account_Category values(2,'compte financier');

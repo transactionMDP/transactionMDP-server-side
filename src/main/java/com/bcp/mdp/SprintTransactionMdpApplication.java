@@ -1,5 +1,7 @@
 package com.bcp.mdp;
 
+import com.bcp.mdp.dao.AccountDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

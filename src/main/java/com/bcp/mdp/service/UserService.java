@@ -1,7 +1,6 @@
 package com.bcp.mdp.service;
 
 import com.bcp.mdp.model.User;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     //public boolean findUserByUsername(String username);

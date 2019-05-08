@@ -3,6 +3,7 @@ package com.bcp.mdp.service;
 import com.bcp.mdp.dao.AccountDao;
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.AccountCategory;
+import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -109,12 +110,12 @@ public class AccountServiveV1 implements IAccountService {
 	
 	@Override
 	public void addObligation(long debitaccountNumber, double amount) {
-		accountdao.updateObligationForAccountNumber(debitaccountNumber, amount+accountdao.findObligationForAccountNumber(debitaccountNumber));
+		accountdao.updateObligationForAccountNumber(debitaccountNumber, amount);
 	}
 
 	@Override
 	public void removeObligation(long debitaccountNumber, double amount) {
-		accountdao.updateObligationForAccountNumber(debitaccountNumber,accountdao.findObligationForAccountNumber(debitaccountNumber)-amount);
+		accountdao.updateObligationForAccountNumber(debitaccountNumber,-amount);
 		
 	}
 	@Override
@@ -127,7 +128,7 @@ public class AccountServiveV1 implements IAccountService {
 	@Override
 	public double retrieveFreeBalanceByAccountNumber(long accountNumber) {
 		// TODO Auto-generated method stub
-		return accountdao.findBalanceForAccountNumber(accountNumber);
+		return accountdao.findFreeBalanceForAccountNumber(accountNumber);
 
 	}
 	
@@ -233,9 +234,25 @@ public class AccountServiveV1 implements IAccountService {
 	public Long retrieveBprLinkAccount( String refAgence) {
 		return accountdao.findBprLinkAccount(refAgence);
 	}
+	
+	@Override
+	public String retrieveAccountCustomerEmail(long accountNumber) {
+		return accountdao.findAccountCustomerEmail(accountNumber);
+	}
+	
+	@Override
+	public String retrieveAccountCustomerName(long accountNumber) {
+		return accountdao.findAccountCustomerName(accountNumber);
+	}
+
 
 	@Override
 	public String getCustomerCategoryByAccountId(Long idAccount) {
 		return accountdao.findCustomerCategoryByAccountId(idAccount);
+	}
+	
+	@Override
+	public Customer retrieveAccountCustomer(long accountNumber ) {
+		return accountdao.findAccountCustomer(accountNumber);
 	}
 }

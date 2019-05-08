@@ -3,9 +3,11 @@ package com.bcp.mdp.service;
 import com.bcp.mdp.dto.TransferDto;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Transaction;
-import com.bcp.mdp.model.TransferType;
 import com.bcp.mdp.security.UserPrincipal;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +44,7 @@ public interface ITransferInBPService {
 	public void updateTransfer();
 	*/
 
-	String doTransfer(TransferDto transfer);
+	String doTransfer(UserPrincipal currentUser, TransferDto transfer);
 	//void createTransaction(TransferDto transfer, long debit, long credit);
 
 	//void doTransfer(TransferDto transfer);
@@ -52,15 +54,17 @@ public interface ITransferInBPService {
 
 	void updateTransactionState(String transactionRef, String codeState);
 
-	void doTransactionOfExecutionDayToday();
+	//	List<Transaction> retrieveTransactionsToExecuteToday();
 
-//	List<Transaction> retrieveTransactionsToExecuteToday();
+	void doTransactionOfExecutionDayToday(List<Transaction> transactions) throws MessagingException, IOException;
 
-	void doTransactionOfExecutionDayToday(List<Transaction> transactions);
-
-	void executeTransaction(Transaction transaction);
+	void executeTransaction(Transaction transaction) throws MessagingException, IOException;
 	Transaction retrieveByReference(String reference);
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
-	void createTransaction(TransferDto transfer, Commission commission, TransferType transferType);
+	//void createTransaction(TransferDto transfer);
 	List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date);
+	void createTransaction(TransferDto transfer, Commission commission);
+
+
+	/*User*/void storeFile(MultipartFile file, String username);
 }

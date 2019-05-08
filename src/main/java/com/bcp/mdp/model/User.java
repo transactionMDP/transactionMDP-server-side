@@ -1,10 +1,7 @@
 package com.bcp.mdp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
