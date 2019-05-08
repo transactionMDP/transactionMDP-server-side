@@ -33,6 +33,7 @@ public class Customer implements Serializable{
 	
 	@OneToOne
 	@JsonManagedReference
+	@JoinColumn(name="categorie")
     CustomerCategory customerCategory;
 	
 	@OneToMany(mappedBy="accountCustomer")

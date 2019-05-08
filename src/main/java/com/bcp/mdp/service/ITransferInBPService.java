@@ -1,6 +1,6 @@
 package com.bcp.mdp.service;
 
-import com.bcp.mdp.dto.TransferDto;
+import com.bcp.mdp.dto.TransferRequest;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.security.UserPrincipal;
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 public interface ITransferInBPService {
 
@@ -44,7 +46,8 @@ public interface ITransferInBPService {
 	public void updateTransfer();
 	*/
 
-	String doTransfer(UserPrincipal currentUser, TransferDto transfer);
+	String doTransfer(UserPrincipal currentUser, TransferRequest transfer);
+
 	//void createTransaction(TransferDto transfer, long debit, long credit);
 
 	//void doTransfer(TransferDto transfer);
@@ -63,8 +66,10 @@ public interface ITransferInBPService {
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
 	//void createTransaction(TransferDto transfer);
 	List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date);
-	void createTransaction(TransferDto transfer, Commission commission);
-
 
 	/*User*/void storeFile(MultipartFile file, String username);
+	void createTransaction(TransferRequest transfer, Commission commission);
+	void cancel(Transaction transaction);
+	void comptabiliser(Transaction transaction);
+	void notifierTransaction();
 }

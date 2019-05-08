@@ -15,7 +15,8 @@ public class CommissionServiceV1 implements ICommissionService {
 	public void persist(Commission commission) {
 		// TODO Auto-generated method stub
 
-		commissionDao.save(commission);
+		commissionDao.saveAndFlush(commission);
+		
 	}
 
 }

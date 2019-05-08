@@ -1,7 +1,6 @@
 package com.bcp.mdp.web.controller;
 
-import com.bcp.mdp.dto.TransferDto;
-import com.bcp.mdp.exception.AppException;
+import com.bcp.mdp.dto.TransferRequest;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.security.CurrentUser;
 import com.bcp.mdp.security.UserPrincipal;
@@ -24,7 +23,7 @@ public class TransferController {
 	private ITransferInBPService transferService;
 	
 	@PostMapping("/dotransfer")
-	public String /*ResponseEntity<?>*/ doTransfer(@CurrentUser UserPrincipal currentUser, @RequestBody TransferDto transfer) {
+	public String /*ResponseEntity<?>*/ doTransfer(@CurrentUser UserPrincipal currentUser, @RequestBody TransferRequest transfer) {
 		return transferService.doTransfer(currentUser,transfer);
 	}
 	

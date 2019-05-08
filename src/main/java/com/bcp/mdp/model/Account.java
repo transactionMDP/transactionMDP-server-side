@@ -35,8 +35,6 @@ public class Account implements Serializable{
 	@Column(columnDefinition="double default 0")
 	double obligation; //sum of amount that will be debited at an execution date of a transaction
 
-	//@Column(columnDefinition="double default 0")
-	@Generated(GenerationTime.ALWAYS)
 	@Formula("balance-obligation")
 	double freeBalance; // that is a real free balance on a account , its is balance-obligation
 	
@@ -94,5 +92,7 @@ public class Account implements Serializable{
 	@JsonBackReference
 	Set<Transaction> transactionsDebit;
 
-
+/*
+	@OneToOne
+	Autorisation autorisation;*/
 }

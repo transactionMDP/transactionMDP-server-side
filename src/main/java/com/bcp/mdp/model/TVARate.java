@@ -19,9 +19,9 @@ public class TVARate implements Serializable{
 	long idTVARate;
 	String TVARate;
 	double tvaValue;
-	
-	@OneToOne(mappedBy="tva")
-	@JsonManagedReference
-    TransferType transferType;
+	/*
+	@OneToOne
+	@JsonBackReference
+    TransferType transferType;*/
 
 }

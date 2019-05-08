@@ -13,6 +13,8 @@ import java.util.List;
 
 @Component("transferDao")
 public interface TransactionDao extends JpaRepository<Transaction, Long> {
+	@Query("select distinct transaction from Transaction transaction where transaction<>null")
+	public  List<Transaction> findAll();
 	
 	@Transactional
 	@Modifying

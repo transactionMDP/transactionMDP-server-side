@@ -3,6 +3,7 @@ package com.bcp.mdp.service;
 import com.bcp.mdp.dao.ExchangeDao;
 import com.bcp.mdp.dto.ValorisationRequest;
 import com.bcp.mdp.dto.ValorisationResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,29 +41,15 @@ public class ExchangeService implements IExchangeService {
     }
 
     @Override
-    public ValorisationResponse valoriseCommission(ValorisationRequest valorisationRequest)
+    public ValorisationResponse valoriseCommission(ValorisationRequest valorisationRequest) 
     {
-
-    	String currencyDebit=accountService.retrieveAccountCurrency(valorisationRequest.getAccountDebit());
     	ValorisationResponse valorisationResponse=new ValorisationResponse();
     	// pour valoriser la commission est ce qu'on utilise le cours instantané ou bien un cours spécifiques
     	valorisationResponse.setExchangeTransferCurrencyToMAD( convertCurrencyAmount(valorisationRequest.getTransactionCurrency(),valorisationRequest.getCommissionAmount()));
-    	
-    	if(currencyDebit.equals(valorisationRequest.getTransactionCurrency()))
-    	{
-    		valorisationResponse.setExchangeTransferCurrencyToOther(valorisation(valorisationRequest.getAccountDebit()
+    	valorisationResponse.setExchangeTransferCurrencyToOther(valorisation(valorisationRequest.getAccountDebit()
     																, valorisationRequest.getAmount()
     																, valorisationRequest.getTransactionCurrency()
-    																,""));//il faut forcement une autre devise
-    		
-    	}
-    	else
-    	{
-    		valorisationResponse.setExchangeTransferCurrencyToOther(valorisation(valorisationRequest.getAccountDebit()
-					, valorisationRequest.getAmount()
-					, valorisationRequest.getTransactionCurrency()
-					, currencyDebit));
-    	}
+    																,"MAD"));//conversion en mad de la commission
     	
     	return valorisationResponse;
     }
@@ -75,6 +62,11 @@ public class ExchangeService implements IExchangeService {
 
     @Override
     public  double valorisation(long accountDebit, double amount, String transactionCurrency, String to) {
+    	
+    	if(transactionCurrency.equals(to))
+    	{
+    		return 1;
+    	}
     	// le taux d'échange est en fonction de la categorie du donner d'ordre qui est le débilteur
         String customerCategory=accountService.getCustomerCategoryByAccountId(accountDebit);
         
