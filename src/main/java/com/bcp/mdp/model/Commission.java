@@ -1,5 +1,6 @@
 package com.bcp.mdp.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.Set;
 
@@ -19,21 +20,16 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Commission {
+public class Commission implements Serializable  {
   
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	long id;
 	double commissionRate;
 	double tvaRate;
-	@Column(columnDefinition=" default 1")
+	@Column(columnDefinition="double default 1")
 	double exchangeTransferCurrencyToOther;
-	@Column(columnDefinition=" default 1")
+	@Column(columnDefinition=" double default 1")
 	double exchangeTransferCurrencyToMAD;
-	
-	@Transient
-	boolean transactionCurrencyEqualsDebitCurrency;
-
-
 
 }

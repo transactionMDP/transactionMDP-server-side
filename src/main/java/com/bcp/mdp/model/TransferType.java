@@ -1,6 +1,7 @@
 package com.bcp.mdp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AccessLevel;
@@ -22,17 +23,16 @@ public class TransferType  implements Serializable{
 	@Id
 	@GeneratedValue()
 	long idTransferType;
+	String code;
 	String type;
 	
 	@OneToOne 
-	@JsonManagedReference
+	@JsonIgnore
     CommissionRate commission;
 	
 	@OneToOne
-	@JsonManagedReference
+	@JsonIgnore
     TVARate tva;
 	
-	@OneToMany(mappedBy="transactionTransferType")
-	@JsonBackReference
-	Set<Transaction> transactions;
+	
 }

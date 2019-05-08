@@ -7,28 +7,28 @@ insert into TVARate values (1,'tvaIntraAgence',0.14);
 insert into TVARate values (2,'tvaIntraBpr',0.16);
 insert into TVARate values (3,'tvaInterBpr',0.2);
 
-insert into Transfer_Type  values(1,'IntraAgence',1,1);
-insert into Transfer_Type  values(2,'IntraBpr',2,2);
-insert into Transfer_Type  values(3,'InterBpr',3,3);
+insert into Transfer_Type  values(1,'IAG','IntraAgence',1,1);
+insert into Transfer_Type  values(2,'IAB','IntraBpr',2,2);
+insert into Transfer_Type  values(3,'IRB','InterBpr',3,3);
 
 insert into Currency values(1,'MAD','Moroccan Dirham');
 insert into Currency values(2,'MAC', 'Moroccan Dirham C');
 insert into Currency values(3,'EUR','Euro');
 insert into Currency values(4,'USD', 'US Dollar');
 
-insert into Exchange_Rate values(1,'MAD','USD',0.103,0.104,1,0.105,null,null);
-insert into Exchange_Rate values(2,'MAD','EUR',0.092,0.093,1,0.094,null,null;
-insert into Exchange_Rate values(3,'USD','MAD',9.666,9.667,1,9.668,null,null);
-insert into Exchange_Rate values(4,'EUR','MAD',10.787,10.788,1,10.789,null,null;
+insert into Exchange_Rate values(1,0.103,0.104,1,0.105,'MAD','USD',null);
+insert into Exchange_Rate values(2,0.092,0.093,1,0.094,'MAD','EUR',null);
+insert into Exchange_Rate values(3,9.666,9.667,1,9.668,'USD','MAD',null);
+insert into Exchange_Rate values(4,10.787,10.788,1,10.789,'EUR','MAD',null);
 
 insert into Transfer_Source values (1,'IEA','Intra en agence');
 insert into Transfer_Source values (2,'IAC','Intra au ctn');
 insert into Transfer_Source values (3,'MBK','M-banking');
-insert into Transfer_Source values (1,'EBK','E-banking');
-insert into Transfer_Source values (1,'GAB','Guichet automatique bancaire');
-insert into Transfer_Source values (1,'FDM','Flux de masse');
-insert into Transfer_Source values (1,'PMI','Permanent intra');
-insert into Transfer_Source values (1,'FTC','Fonction centrale');
+insert into Transfer_Source values (4,'EBK','E-banking');
+insert into Transfer_Source values (5,'GAB','Guichet automatique bancaire');
+insert into Transfer_Source values (6,'FDM','Flux de masse');
+insert into Transfer_Source values (7,'PMI','Permanent intra');
+insert into Transfer_Source values (8,'FTC','Fonction centrale');
 
 
 insert into Account_Category values(1,'compte de gestion');
@@ -51,6 +51,8 @@ insert into Account_Sub_Category_Nature values(1,'compte individuel',4);
 insert into Account_Sub_Category_Nature values(2,'compte joint',4);
 insert into Account_Sub_Category_Nature values(3,'compte indivis',4);
 insert into Account_Sub_Category_Nature values(4,'compte à terme',4);
+
+
 
 
 insert into Bank_Central_Pop values(1,'boulevard zerktouni','280','banque centrale populaire');
@@ -166,7 +168,12 @@ values(2747,5000,'400','MAD','240',4,'compte courant');
 insert into Account(account_number,Balance,state,CURRENCY,resident,customer,account_category)
 values(2748,5000,'505','MAD','250',4,'compte courant');
 
-
+insert into Autorisation(reference,initial_amount,balance,amount_of_pending_transfer,deb_date,final_date,motif,owner) 
+values(12,45000,45000,0,'2019-09-01','2020-09-01','scolaire',2730);
+insert into Autorisation (reference,initial_amount,balance,amount_of_pending_transfer,deb_date,final_date,motif,owner) 
+values (13,45000,5000,0,'2019-09-01','2020-09-01','scolaire',2731);
+insert into Autorisation (reference,initial_amount,balance,amount_of_pending_transfer,deb_date,final_date,motif,owner) 
+values (15,45000,0,0,'2019-09-01','2020-09-01','scolaire',2729);
 
 
 insert into Customer_Category values(1,'particulierProfessionel');
@@ -175,14 +182,15 @@ insert into Customer_Category values(3,'client salle de marché');
 insert into Customer_Category values(4,'TPE');
 insert into Customer_Category values(5,'PME');
 insert into Customer_Category values(6,'GE');
-
+insert into Customer_Category values(7,'particulierPersonnel');
 
 insert into Customer_Sub_Category values(1,'particulierProfessionel',1);
 insert into Customer_Sub_Category values(2,'particulierSimple',1);
-insert into Customer_Sub_Category values(3,'client salle de marché',2);
+insert into Customer_Sub_Category values(3,'particulierPersonnel',1);
+insert into Customer_Sub_Category values(4,'client salle de marché',2);
 
 
-insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number) values(1,'Aissata','Sinaba','200',222);
-insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number) values(2,'Reda','Khouna','200',22);
-insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number) values(3,'xxx','yyy','606',222);
-insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number) values(4,'xxx','yyy','707',222);
+insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number,categorie) values(1,'Aissata','Sinaba','200',222,1);
+insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number,categorie) values(2,'Reda','Khouna','200',22,2);
+insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number,categorie) values(3,'xxx','yyy','606',222,7);
+insert into Customer_Particular(customer_id,first_name,last_name,state,phone_number,categorie) values(4,'xxx','yyy','707',222,1);

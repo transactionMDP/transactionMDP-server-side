@@ -1,6 +1,6 @@
 package com.bcp.mdp.service;
 
-import com.bcp.mdp.dto.TransferDto;
+import com.bcp.mdp.dto.TransferRequest;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Transaction;
 import com.bcp.mdp.model.TransferType;
@@ -45,7 +45,7 @@ public interface ITransferInBPService {
 	public void updateTransfer();
 	*/
 
-	String doTransfer(TransferDto transfer);
+	String doTransfer(TransferRequest transfer);
 	//void createTransaction(TransferDto transfer, long debit, long credit);
 
 	//void doTransfer(TransferDto transfer);
@@ -64,5 +64,8 @@ public interface ITransferInBPService {
 	void createIntermediaireTransaction(long debitAccount, long creditAccount, double commission);
 	//void createTransaction(TransferDto transfer);
 	List<Transaction> retrieveTransactionsToExecuteToday(LocalDate date);
-	void createTransaction(TransferDto transfer, Commission commission);
+	void createTransaction(TransferRequest transfer, Commission commission);
+	void cancel(Transaction transaction);
+	void comptabiliser(Transaction transaction);
+	void notifierTransaction();
 }

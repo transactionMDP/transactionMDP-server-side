@@ -3,8 +3,7 @@ package com.bcp.mdp.service;
 import com.bcp.mdp.dao.TransactionDao;
 import com.bcp.mdp.dao.TransferTypeDao;
 import com.bcp.mdp.dto.MailMessageDto;
-import com.bcp.mdp.dto.TarificationOfTransaction;
-import com.bcp.mdp.dto.TransferDto;
+import com.bcp.mdp.dto.TransferRequest ;
 import com.bcp.mdp.model.Account;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.Currency;
@@ -58,9 +57,12 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
     
     @Autowired
     private IExchangeService exchangeService;
+    
+    @Autowired
+    private IAutorisationService autorisationService;
 
 	@Override
-	public void createTransaction(TransferDto transfer, Commission commission) {
+	public void createTransaction(TransferRequest  transfer, Commission commission) {
 		// TODO Auto-generated method stub
 		Transaction transactionForPersistance =new Transaction() ;
 		Account debitAccount=accountService.retrieveAccountByAccountNumber(transfer.getPrincipalAccount());
@@ -70,6 +72,8 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		transactionForPersistance.setAmount(transfer.getTransactionAmount());
 		transactionForPersistance.setExecutionDate(transfer.getExecutionDate());
 		transactionForPersistance.setTransferReason(transfer.getTransferReason());
+		transactionForPersistance.setType(tarificationService.verifyTransferType(transfer.getPrincipalAccount(),transfer.getBeneficiaryAccount()));
+		transactionForPersistance.setTransferNature(transfer.getTransferNature());
 		Currency currency= currencyService.retrieveCurrencyByCode(transfer.getTransactionCurrency());
 		transactionForPersistance.setTransactionCurrency(currency);
 		transactionForPersistance.setSource(transferSourceService.retrieveByCode(transfer.getTransactionSource()));
@@ -88,11 +92,11 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 	}
 	
 	@Override
-	public String doTransfer( TransferDto transfer) {
+	public String doTransfer( TransferRequest  transfer) {
 		// TODO Auto-generated method stub
 		long debitAccountNumber=transfer.getPrincipalAccount();
 		long creditAccountNumber=transfer.getBeneficiaryAccount();
-		
+		// verifier que les comptes st des comptes clients à part pour le canaux ctn et fonction centrale
 		
 		// ces variables servent à verifier s'il doit avoir échange ou pas 
 		String currency=transfer.getTransactionCurrency();
@@ -113,16 +117,37 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		{
 			sumAmount=amount;
 		}
-		
+		double sumAmountToMAD=sumAmount*exchangeService.valorisation(debitAccountNumber, sumAmount, currency, "MAD");
 		Commission commission = new Commission();
 		commission.setCommissionRate(transfer.getCommissionRate());
 		commission.setTvaRate(transfer.getTVARate());
 		
+		long autorisationNumber=transfer.getAutorisationNumber();
 		
 		
 		// valoriser la devise de transaction vers le MAD (pour la commission) et vers la devise (credit ou debit) qui est differente de celle de la transaction
-		if(currency.equals(currencyDebit)==false&&currency.equals(currencyCredit)==false)
+		if(currency.equals(currencyDebit)==false||currency.equals(currencyCredit)==false)
 		{
+			// il faut d'avoir verifier l'autorisation de l'office de change. ? pour le debiteur oubien pour les deux
+			
+			if(autorisationNumber!=0)
+			{
+				System.out.print(autorisationService.check(autorisationNumber, transfer.getAutorisationValidate(), debitAccountNumber));
+				
+				if(autorisationService.check(autorisationNumber, transfer.getAutorisationValidate(), debitAccountNumber)==null)
+				{
+					
+					return "non autorisé par l'office des changes";
+				}
+				
+				else
+				{
+					if(autorisationService.getFreeBalance(autorisationNumber)<sumAmountToMAD)
+					{
+						return "solde de l'autorisation insuffissante";
+					}
+				}
+			}
 		
 			if(isTransactionCurrencyEqualsDebitCurrency)
 			{
@@ -153,7 +178,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				
 			else
 			{
-				if(transfer.isTransactionCurrencyEqualsDebitCurrency()==false&&accountDebitFreeBalance>=sumAmountExchange)
+				if(isTransactionCurrencyEqualsDebitCurrency==false&&accountDebitFreeBalance>=sumAmountExchange)
 				{
 					accountService.addObligation(debitAccountNumber,sumAmountExchange);
 					debitOK=true;
@@ -165,7 +190,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		
 		else  // c'est à dire la charge est BEN ( charge endossée par le crediteur)
 		{
-				if(transfer.isTransactionCurrencyEqualsDebitCurrency()&&accountDebitFreeBalance>=amount)
+				if(isTransactionCurrencyEqualsDebitCurrency&&accountDebitFreeBalance>=amount)
 				{
 					accountService.addObligation(debitAccountNumber, amount);
 					debitOK=true;
@@ -173,9 +198,9 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 				
 				else
 				{
-					if(transfer.isTransactionCurrencyEqualsDebitCurrency()==false&&accountDebitFreeBalance>=amountExchange)
+					if(isTransactionCurrencyEqualsDebitCurrency==false&&accountDebitFreeBalance>=amountExchange)
 					{
-						 accountService.addObligation(debitAccountNumber, amount*transfer.getExchangeTransferCurrencyToOther());
+						 accountService.addObligation(debitAccountNumber, amountExchange);
 						 debitOK=true;
 					}
 				}
@@ -186,6 +211,7 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 		if(debitOK)
 		{
 			createTransaction(transfer,commission);
+			autorisationService.updateObligation(autorisationNumber, sumAmountToMAD);
 			return "OK";
 		}
 			return "Solde insuffisant";
@@ -193,97 +219,21 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 
 	@Override
 	public void executeTransaction(Transaction transaction) throws MessagingException, IOException {
-		double amount=transaction.getAmount();
-		double commission=amount*transaction.getCommission().getCommissionRate();
-		double tva=commission*transaction.getCommission().getTvaRate();
-		double sumAmount=amount+commission+tva;
-		
-		boolean transactionCurrencyEqualsDebitCurrency=transaction.getCommission().isTransactionCurrencyEqualsDebitCurrency();
-		double exchangeTransferCurrencyToOther=transaction.getCommission().getExchangeTransferCurrencyToOther();
-		double exchangeTransferCurrencyToMAD=transaction.getCommission().getExchangeTransferCurrencyToMAD();
-		
-		double obligation=0;
-		if(transaction.isApplyCommission()==true)
-		{
-
-			if(transaction.getChargeType().equals("OUR"))
-			{
-				if(transactionCurrencyEqualsDebitCurrency)
-				{
-					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),sumAmount);
-					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount* exchangeTransferCurrencyToOther);
-					obligation=sumAmount;
-				}
-				else
-				{
-					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),sumAmount* exchangeTransferCurrencyToOther);
-					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
-					obligation=sumAmount* exchangeTransferCurrencyToOther;
-				}
+		 comptabiliser(transaction);
+		// updateTransactionState(transaction.getReference(), "6000"); // on va plutot utiliser le save  car une transaction n'existe pas toujours dans a BD
+		 transaction.setState(stateService.retrieveStateByLibelle("6000"));// on met à jour l'objet qu'on a en meme temps
+		 transferDao.save(transaction);// les transfer d'autres canaux (flux de masse par exemple) ne sont pas persistées au préalable
+		 if(transaction.getAutorisationNumber()!=0)
+		 {
+		 double amount=transaction.getAmount();
 				
-				
-			}
-			else
-			{
-				if(transactionCurrencyEqualsDebitCurrency)
-				{
-					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount);
-					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), (amount-(commission+tva))* exchangeTransferCurrencyToOther);
-					obligation=amount;
-				}
-				else
-				{
-					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount* exchangeTransferCurrencyToOther);
-					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount-(commission+tva));
-					obligation=amount* exchangeTransferCurrencyToOther;
-				}
-			}
-				
-			String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(transaction.getDebitAccount().getAccountNumber());
-			accountService.creditAccount(accountService.retrieveInstituteAccountNumberPLByReferenceOfInstitut(instituteReferenceForDebitAccount),commission*exchangeTransferCurrencyToMAD);
-			accountService.creditAccount(accountService.retrieveInstituteAccountNumberTVAByReferenceOfInstitut(instituteReferenceForDebitAccount),tva*exchangeTransferCurrencyToMAD);
-			if(transaction.getReference().startsWith("3", 3))
-			{
-				
-				String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(transaction.getCreditAccount().getAccountNumber());
-				Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
-				Long bprLinkaccountCredit=accountService.retrieveBprLinkAccount(instituteReferenceForCreditAccount);
-				
-				
-				accountService.creditAccount(bprLinkaccountDebtit, amount*exchangeTransferCurrencyToMAD);
-				createIntermediaireTransaction(transaction.getDebitAccount().getAccountNumber(),bprLinkaccountDebtit,amount*exchangeTransferCurrencyToMAD);
-				
-				accountService.debitAccount(bprLinkaccountDebtit, amount*exchangeTransferCurrencyToMAD);
-				accountService.creditAccount(bprLinkaccountCredit, amount*exchangeTransferCurrencyToMAD);
-				createIntermediaireTransaction(bprLinkaccountDebtit,bprLinkaccountCredit,amount*exchangeTransferCurrencyToMAD);
-				
-				accountService.debitAccount(bprLinkaccountCredit, amount*exchangeTransferCurrencyToMAD);
-				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount*exchangeTransferCurrencyToMAD);
-				createIntermediaireTransaction(bprLinkaccountCredit,transaction.getCreditAccount().getAccountNumber(),amount*exchangeTransferCurrencyToMAD);
-				
-		}
-		}
-		
-		else
-		{
-			if(transactionCurrencyEqualsDebitCurrency)
-			{
-				accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount);
-				obligation=amount;
-				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount*exchangeTransferCurrencyToOther);
-			}
-			
-			else
-			{
-				accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount*exchangeTransferCurrencyToOther);
-				obligation=amount*exchangeTransferCurrencyToOther;
-				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
-			}
-		}
-		
-		accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),obligation);
-		 updateTransactionState(transaction.getReference(), "6000");
-		 
+			double commission=amount*transaction.getCommission().getCommissionRate();
+			double tva=commission*transaction.getCommission().getTvaRate();
+			double sumAmount=amount+commission+tva;
+			double sumAmountToMAD=sumAmount*transaction.getCommission().getExchangeTransferCurrencyToMAD();
+		    autorisationService.updateObligation(transaction.getAutorisationNumber(), -sumAmountToMAD );
+		    autorisationService.updateBalance(transaction.getAutorisationNumber(), -sumAmountToMAD);
+		 }
 		 MailMessageDto mail= new MailMessageDto();
 		 String nameDebiter=accountService.retrieveAccountCustomerName(transaction.getDebitAccount().getAccountNumber());
 		 String emailDebiter=accountService.retrieveAccountCustomerEmail(transaction.getDebitAccount().getAccountNumber());
@@ -396,5 +346,178 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    @Override
+    public void notifierTransaction() {
+    	
+    }
+    @Override
+    //pour ne pas repeter la comptabilisation lors de la création et l'annulation du virement
+    public void comptabiliser(Transaction transaction)
+    {
+    	double amount=transaction.getAmount();
+		
+		double commission=amount*transaction.getCommission().getCommissionRate();
+		double tva=commission*transaction.getCommission().getTvaRate();
+		double sumAmount=amount+commission+tva;
+		
+		boolean transactionCurrencyEqualsDebitCurrency=true;//transaction.getCommission().isTransactionCurrencyEqualsDebitCurrency();
+		double exchangeTransferCurrencyToOther=transaction.getCommission().getExchangeTransferCurrencyToOther();
+		double exchangeTransferCurrencyToMAD=transaction.getCommission().getExchangeTransferCurrencyToMAD();
+		
+		double obligation=0;
+		if(transaction.isApplyCommission()==true)
+		{
 
+			if(transaction.getChargeType().equals("OUR"))
+			{
+				if(transactionCurrencyEqualsDebitCurrency)
+				{
+					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),sumAmount);
+					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount* exchangeTransferCurrencyToOther);
+					obligation=sumAmount;
+				}
+				else
+				{
+					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),sumAmount* exchangeTransferCurrencyToOther);
+					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
+					obligation=sumAmount* exchangeTransferCurrencyToOther;
+				}
+				
+				
+			}
+			else
+			{
+				if(transactionCurrencyEqualsDebitCurrency)
+				{
+					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount);
+					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), (amount-(commission+tva))* exchangeTransferCurrencyToOther);
+					obligation=amount;
+				}
+				else
+				{
+					accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount* exchangeTransferCurrencyToOther);
+					accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount-(commission+tva));
+					obligation=amount* exchangeTransferCurrencyToOther;
+				}
+			}
+				
+			String instituteReferenceForDebitAccount=accountService.retrieveAccountResidenceReference(transaction.getDebitAccount().getAccountNumber());
+			accountService.creditAccount(accountService.retrieveInstituteAccountNumberPLByReferenceOfInstitut(instituteReferenceForDebitAccount),commission*exchangeTransferCurrencyToMAD);
+			accountService.creditAccount(accountService.retrieveInstituteAccountNumberTVAByReferenceOfInstitut(instituteReferenceForDebitAccount),tva*exchangeTransferCurrencyToMAD);
+			if(transaction.getReference().startsWith("3", 3))
+			{
+				
+				String instituteReferenceForCreditAccount=accountService.retrieveAccountResidenceReference(transaction.getCreditAccount().getAccountNumber());
+				Long bprLinkaccountDebtit=accountService.retrieveBprLinkAccount(instituteReferenceForDebitAccount);
+				Long bprLinkaccountCredit=accountService.retrieveBprLinkAccount(instituteReferenceForCreditAccount);
+				
+				
+				accountService.creditAccount(bprLinkaccountDebtit, amount*exchangeTransferCurrencyToMAD);
+				createIntermediaireTransaction(transaction.getDebitAccount().getAccountNumber(),bprLinkaccountDebtit,amount*exchangeTransferCurrencyToMAD);
+				
+				accountService.debitAccount(bprLinkaccountDebtit, amount*exchangeTransferCurrencyToMAD);
+				accountService.creditAccount(bprLinkaccountCredit, amount*exchangeTransferCurrencyToMAD);
+				createIntermediaireTransaction(bprLinkaccountDebtit,bprLinkaccountCredit,amount*exchangeTransferCurrencyToMAD);
+				
+				accountService.debitAccount(bprLinkaccountCredit, amount*exchangeTransferCurrencyToMAD);
+				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount*exchangeTransferCurrencyToMAD);
+				createIntermediaireTransaction(bprLinkaccountCredit,transaction.getCreditAccount().getAccountNumber(),amount*exchangeTransferCurrencyToMAD);
+				
+		}
+		}
+		
+		else
+		{
+			if(transactionCurrencyEqualsDebitCurrency)
+			{
+				accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount);
+				obligation=amount;
+				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount*exchangeTransferCurrencyToOther);
+			}
+			
+			else
+			{
+				accountService.debitAccount(transaction.getDebitAccount().getAccountNumber(),amount*exchangeTransferCurrencyToOther);
+				obligation=amount*exchangeTransferCurrencyToOther;
+				accountService.creditAccount(transaction.getCreditAccount().getAccountNumber(), amount);
+			}
+		}
+		
+		if(transaction.getState().getCode().equals("5000")==false) // si l'état  de la transaction est autre que  annuléé
+		{
+			accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),obligation);
+		}
+		
+		
+		 
+    }
+
+    @Override
+    public void cancel(Transaction transaction)
+    {
+    	double amount=transaction.getAmount();	
+		double commission=amount*transaction.getCommission().getCommissionRate();
+		double tva=commission*transaction.getCommission().getTvaRate();
+		double sumAmount=amount+commission+tva;
+		double sumAmountToMAD=sumAmount*transaction.getCommission().getExchangeTransferCurrencyToMAD();
+	
+    	if(transaction.getState().getCode().equals("6000")) // si la transaction avant été exécuté
+    	{
+    		// permutation du compte debiteur et du compte crediteur afin de faire une comptabilisation inverse
+    		Account debitAccount=transaction.getCreditAccount();
+    		Account creditAccount=transaction.getDebitAccount();
+        	
+    		transaction.setCreditAccount(creditAccount);
+    		transaction.setDebitAccount(debitAccount);
+   
+    		comptabiliser(transaction);
+    		
+    		 if(transaction.getAutorisationNumber()!=0)
+    		 {
+    		
+    		    autorisationService.updateBalance(transaction.getAutorisationNumber(), +sumAmountToMAD);
+    		 }
+    	}
+    	
+    	else
+    	{
+    		 if(transaction.getAutorisationNumber()!=0)
+    		 {
+    		
+    		    autorisationService.updateObligation(transaction.getAutorisationNumber(), -sumAmountToMAD );
+    		 }
+    		 
+    		 if(transaction.getTransactionCurrency().equals(transaction.getDebitAccount().getAccountCurrency()))
+    		 {
+    			 if(transaction.getChargeType().equals("OUR"))
+    			 {
+    				 accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),sumAmount);
+    			 }
+    			 else
+    			 {
+    				 accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),amount);
+    			 }
+    		 }
+    		 
+    		 else
+    		 {
+    			 if(transaction.getChargeType().equals("OUR"))
+    			 {
+    				 accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),sumAmount*transaction.getCommission().getExchangeTransferCurrencyToOther());
+    			 }
+    			 
+    			 else
+    			 {
+    				 accountService.removeObligation(transaction.getDebitAccount().getAccountNumber(),amount*transaction.getCommission().getExchangeTransferCurrencyToOther());
+    			 }
+    			
+    		 }
+    		 
+    		
+    	}
+    	//changer l'etat de la transaction en annulée
+    	updateTransactionState(transaction.getReference(), "5000"); // 5000 c'est le code de l'état annulée
+    		
+    }
 }

@@ -7,11 +7,12 @@ import com.bcp.mdp.model.Customer;
 import com.bcp.mdp.model.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component("accountService")
+@Service
 public class AccountServiveV1 implements IAccountService {
 	
 	@Autowired

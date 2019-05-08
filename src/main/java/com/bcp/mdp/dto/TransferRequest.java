@@ -10,8 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor  @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TransferDto {
+public class TransferRequest {
 	 String transactionSource;
+	 String transferNature;
+	 long autorisationNumber;
+	 LocalDate  autorisationValidate;
 	 long principalAccount;
 	 long beneficiaryAccount ;
 	 String transferReason;
@@ -24,9 +27,5 @@ public class TransferDto {
 	 double TVARate;
 	 double commissionTVA;
 	 double transactionAmount;
-	 boolean transactionCurrencyEqualsDebitCurrency;
- 
-	 double exchangeTransferCurrencyToOther;
-	 double exchangeTransferCurrencyToMAD;
-	 
+	
 }

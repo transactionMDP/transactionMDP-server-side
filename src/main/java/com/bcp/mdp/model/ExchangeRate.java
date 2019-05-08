@@ -20,9 +20,13 @@ public class ExchangeRate implements Serializable {
 	@GeneratedValue()
 	long idExchangeRate;
 	//String name;
+	@Column(columnDefinition="double default 1")
 	double instantCourse;
+	@Column(columnDefinition="double default 1")
 	double batchNegociatedCourse;
+	@Column(columnDefinition="double default 1")
 	double individualNegociatedCourse;
+	@Column(columnDefinition="double default 1")
 	double preferentialCourse;
 
 	@OneToOne
