@@ -10,7 +10,7 @@ public class TransferRequest {
 	 String transactionSource;
 	 String transferNature;
 	 long autorisationNumber;
-	 LocalDate  autorisationValidate;
+	 LocalDate autorisationValidate;
 	 long principalAccount;
 	 long beneficiaryAccount ;
 	 String transferReason;

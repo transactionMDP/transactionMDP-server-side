@@ -18,6 +18,11 @@ public class AutorisationService implements IAutorisationService {
 	public Autorisation check(long autorisationNumber, LocalDate autorisationValidate, long accountNumber) {
 		// TODO Auto-generated method stub
 		return autorisationRepository.find(autorisationNumber, autorisationValidate, accountNumber);
+		//return autorisationRepository.find(autorisationNumber, accountNumber);
+		//return  autorisationRepository.findByReferenceAndFinalDate(autorisationNumber, autorisationValidate);
+		//return autorisationRepository.findByReference(autorisationNumber);
+		//return autorisationRepository.findByFinalDate(autorisationValidate);
+		//return autorisationRepository.findByAccountNumber(accountNumber);
 	}
 
 	@Override

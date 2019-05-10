@@ -1,19 +1,20 @@
 package com.bcp.mdp.service;
 
 import com.bcp.mdp.dao.AgencyDao;
-import com.bcp.mdp.dao.TransactionDao;
+import com.bcp.mdp.dao.TransferDao;
 import com.bcp.mdp.dao.TransferTypeDao;
 import com.bcp.mdp.dto.TarificationOfTransaction;
 import com.bcp.mdp.model.Commission;
 import com.bcp.mdp.model.TransferType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component(value="tarificationService")
-public class TarificationServiceV1 implements ITarificationService {
+@Service
+public class TarificationService implements ITarificationService {
 
 	@Autowired
-	private TransactionDao transferDao;
+	private TransferDao transferDao;
 	
 	@Autowired 
 	private TransferTypeDao transferTypeDao;

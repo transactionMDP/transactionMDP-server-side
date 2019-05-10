@@ -16,7 +16,6 @@ import java.util.List;
 @Repository
 public interface AccountDao extends JpaRepository<Account, Long> {
 	
-	
 	public List<Account> findByAccountCustomer(Long customerId);
 	//public Account findCustomerAccountInfo(/*Long customerId, */ Long accountId);
 	public List<Account> findByAccountCategory(Long accountCategoryId);
@@ -29,35 +28,31 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 	@Query("select a.accountResident from Account a")
 	public List<Account> findAccountResident(Long residenceId);
 	
-	@Query("select distinct a.accountNumber from Account a"
-			+ " inner join a.instituteAccount institute on institute<>null  " )
+	@Query("select distinct a.accountNumber from Account a where a.instituteAccount<>null  " )
 	public List<Long> findInstituteAccounts();
 	
-	@Query(value="select distinct a.accountNumber from Account  a"
-			+ " inner join a.instituteAccount institute on  institute.instituteReference = :instituteAccount")
+	@Query(value="select distinct a.accountNumber from Account  a where  a.instituteAccount.instituteReference = :instituteAccount")
 	public List<Long> findInstituteAccountsByInstituteReference(@Param("instituteAccount") String instituteAccount);
 	
 	@Query(value="select distinct a.accountNumber from Account  a"
-			+ " inner join a.instituteAccount institute on  institute.instituteReference = :instituteAccount"
-			+ " inner join a.accountCategory  category on category.type='compte de charges et profit'")
+			+ " where a.instituteAccount.instituteReference = :instituteAccount"
+			+ " and a.accountCategory.type='compte de charges et profit'")
 	public Long findInstituteAccountNumberPLByInstituteReference(@Param("instituteAccount") String instituteAccount);
 	
 	@Query(value="select distinct a.accountNumber from Account  a"
-			+ " inner join a.instituteAccount institute on  institute.instituteReference = :instituteAccount"
-			+ " inner join a.accountCategory  category on category.type='compte tva'")
+			+ " where a.instituteAccount.instituteReference = :instituteAccount"
+			+ " and a.accountCategory.type='compte tva'")
 	public Long findInstituteAccountNumberTVAByInstituteReference(@Param("instituteAccount") String instituteAccount);
 	
-	@Query("select  distinct a.accountNumber from Account a  "
-			+ " inner join a.accountCategory  category on category.type='compte tva'")
+	@Query("select  distinct a.accountNumber from Account a where a.accountCategory.type ='compte de charges et profit'")
 	public List<Long> findInstituteAccountNumberPL();
 	
-	@Query("select  distinct a.accountNumber from Account a  "
-			+ " inner join a.accountCategory  category on category.type='compte tva' ")
+	@Query("select  distinct a.accountNumber from Account a  where a.accountCategory.type='compte tva' ")
 	public List<Long> findInstituteAccountNumberTVA();
 	
 	@Query("select distinct a.accountNumber from Account a "
-			+ " inner join a.accountCategory  category on category.type='compte de liaiqon bpr agence' "
-			+ "  inner join a.accountResident residence on residence.instituteReference ="
+			+ " where a.accountCategory.type='compte de liaiqon bpr agence' "
+			+ "  and a.accountResident.instituteReference ="
 			+ " (select distinct bpr.instituteReference from BankRegional bpr "
 			+ " inner join bpr. agencies agency on agency.instituteReference= :refAgence)"
 			 )
@@ -96,65 +91,24 @@ public interface AccountDao extends JpaRepository<Account, Long> {
 			+ " inner join a.state state on  a.accountNumber= :AccountNumber")
 	public State findStateForAccountNumber(@Param("AccountNumber") long AccountNumber);
 	
-	@Query("Select customer.state From Account a "
-			+ " inner join a.accountCustomer customer "
-			+ "where  a.accountNumber= :AccountNumber")
+	@Query("Select a.accountCustomer.state From Account a where  a.accountNumber= :AccountNumber")
 	public State findStateForAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
-	@Query("Select customer.email From Account a "
-			+ " inner join a.accountCustomer customer "
-			+ "where  a.accountNumber= :AccountNumber")
+	@Query("Select a.accountCustomer.email From Account a where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerEmail(@Param("AccountNumber") long AccountNumber);
 
 
-	@Query("Select customer.name From Account a "
-			+ " inner join a.accountCustomer customer "
-			+ "where  a.accountNumber= :AccountNumber")
+	@Query("Select  a.accountCustomer.name From Account a where  a.accountNumber= :AccountNumber")
 	public String findAccountCustomerName(@Param("AccountNumber") long AccountNumber);
 	
 
-	@Query("Select currency.code From Account a  "
-
-			+ " inner join a.accountCurrency currency  "
-			+ " on  a.accountNumber= :AccountNumber")
+	@Query("Select a.accountCurrency.code From Account a where a.accountNumber= :AccountNumber")
 	public String findCurrencyForAccountNumber(@Param("AccountNumber") long AccountNumber);
 	
-	@Query("Select residence.instituteReference From Account a "
-			+ " inner join a.accountResident residence "
-			+ " on  a.accountNumber= :AccountNumber")
+	@Query("Select a.accountResident.instituteReference From Account a where a.accountNumber= :AccountNumber")
 	public String findResidenceForAccountNumber(@Param("AccountNumber") long AccountNumber);
 	
 	@Query("Select a.accountCustomer From Account a where  a.accountNumber= :AccountNumber")
 	public Customer findAccountCustomer(@Param("AccountNumber") long AccountNumber);
 	
-
-	
-	
-	/*ici on ne va preciser que les fonctions spécifiques à un compte,  le reste des fonctions standarts sont dejà definies 
-	 * dans jpaRepository
-	 */
-	/* la fonction findAccountBalance permet de retourner le solde d'un compte grace au numero de compte*/
-	//public double findAccountBalance(Long idAccount);
-	
-	//la fonction creditAccount permet de crediter un compte en lui  donnant un numero de compte et un montant à crediter
-	//public void creditAccount(@Param("accountNumber")long accountNumber, @Param("amount") double amount);
-	
-	/*la fonction debitAccount permet de debiter un compte en lui  donnant un numero de compte et un montant à debiter*/
-	//public void debitAccount(Long accountNumber, double amount);
-	
-	/*
-	@Query("update Account a set "
-			+ "a.accountNumber= :newAccount.accountNumber "
-			+ "where a.accountNumber= :oldAccount.accountNumber")
-	public void updateAccount(Account oldAccount, Account newAccount); */
-	//public boolean retrieveExistAccount(long accountNumber);
-
-	/*Account findByAccountNumber(double accountNumber);
-
-	Account findByAccountNumber(Long accountNumber);*/
-
-	
-	
-	
-
 }

@@ -1,20 +1,36 @@
 package com.bcp.mdp.dao;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bcp.mdp.model.Autorisation;
 
+@Repository
 public interface AutorisationRepository extends JpaRepository<Autorisation, Long> {
 	
 	@Query("select aut from Autorisation aut where aut.reference= ?1 and aut.finalDate= ?2 and aut.owner.accountNumber= ?3")
 	public Autorisation find(long autorisationNumber, LocalDate autorisationValidate, long accountNumber);
+	
+	@Query("select aut from Autorisation aut where aut.reference= ?1 and aut.owner.accountNumber= ?2")
+	public Autorisation find(long autorisationNumber, long accountNumber);
+	
+	public Autorisation findByReferenceAndFinalDate(long autorisationNumber, LocalDate autorisationValidate);
+	
+	public Autorisation findByReference(long autorisationNumber);
 
+	@Query("select distinct  aut from Autorisation aut where  aut.finalDate= ?1")
+	public List<Autorisation> findByFinalDate(LocalDate autorisationValidate);
+	
+	@Query("select aut from Autorisation aut where  aut.owner.accountNumber= ?1")
+	public Autorisation findByAccountNumber(long accountNumber);
+	
 	@Query("select aut.balance from Autorisation aut where aut.reference=?1 ")
 	public double findBalance(long autorisationNumber);
 	
