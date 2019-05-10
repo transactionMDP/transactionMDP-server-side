@@ -1,6 +1,6 @@
 package com.bcp.mdp.service;
 
-import com.bcp.mdp.dao.TransactionDao;
+import com.bcp.mdp.dao.TransferDao;
 import com.bcp.mdp.dao.TransferTypeDao;
 import com.bcp.mdp.dto.MailMessageDto;
 import com.bcp.mdp.dto.TransferRequest ;
@@ -35,7 +35,7 @@ import javax.persistence.Column;
 public class TransferInBPServiceV1 implements ITransferInBPService {
 
     @Autowired
-    private TransactionDao transferDao;
+    private TransferDao transferDao;
 
     @Autowired
     private TransferTypeDao transferTypeDao;
@@ -141,7 +141,6 @@ public class TransferInBPServiceV1 implements ITransferInBPService {
 			
 			if(autorisationNumber!=0)
 			{
-				System.out.print(autorisationService.check(autorisationNumber, transfer.getAutorisationValidate(), debitAccountNumber));
 				
 				if(autorisationService.check(autorisationNumber, transfer.getAutorisationValidate(), debitAccountNumber)==null)
 				{
