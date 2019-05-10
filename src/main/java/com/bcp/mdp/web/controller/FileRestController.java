@@ -45,6 +45,9 @@ public class FileRestController {
         String[] tokensVal = fileName.split(delimiters);
 
         // prints the count of tokens
+        System.out.println("Num du Compte: "+tokensVal[0]);
+        System.out.println("Montant: "+tokensVal[1]);
+
         for(String token : tokensVal) {
             System.out.print(token+" ");
         }

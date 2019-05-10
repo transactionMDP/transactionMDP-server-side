@@ -20,6 +20,8 @@ insert into Currency values(4,'USD', 'US Dollar');
 insert into Exchange_Rate values(1,0.103,0.104,1,0.105,'MAD','USD',null);
 insert into Exchange_Rate values(2,0.092,0.093,1,0.094,'MAD','EUR',null);
 insert into Exchange_Rate values(3,9.666,9.667,1,9.668,'USD','MAD',null);
+insert into Exchange_Rate values(4,10.787,10.788,1,10.789,'EUR','MAD',null);
+
 
 insert into Transfer_Source values (1,'IEA','Intra en agence');
 insert into Transfer_Source values (2,'IAC','Intra au ctn');
